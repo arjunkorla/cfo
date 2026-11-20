@@ -1,0 +1,25 @@
+/* Emagia O2C left navigation — component styles.
+   Extends the shared Emagia shell styles already present in each page (.sidebar, .sb-nav, .sb-item, .sb-foot,
+   --g-sidebar gradient, white active pill). Uses existing tokens only; adds no colours. */
+
+/* Hamburger at the top */
+.sb-top{display:flex;justify-content:center;padding:0 8px 12px}
+.sb-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:0;border-radius:var(--r-control);background:transparent;color:#fff;cursor:pointer;transition:background-color var(--fast)}
+.sb-toggle:hover{background:rgba(255,255,255,.12)}
+.sb-toggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--primary-500),0 0 0 4px #fff}
+
+/* Subtle separators (below the hamburger, above the footer) */
+.sb-sep{flex:none;height:1px;margin:0 12px 12px;background:rgba(255,255,255,.2)}
+.sb-sep-foot{margin:8px 12px 0}
+
+/* Items without a route: same look, still focusable and announced as not linked */
+.sb-item[aria-disabled="true"]{cursor:pointer}
+.sb-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Collapsed rail (desktop only; < 1024px the page's off-canvas drawer applies) */
+@media (min-width:1024px){
+  body.sb-collapsed{--sidebar-w:64px}
+  body.sb-collapsed .sb-item{padding:12px 0}
+  body.sb-collapsed .sb-label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  body.sb-collapsed .sb-foot img{width:44px}
+}

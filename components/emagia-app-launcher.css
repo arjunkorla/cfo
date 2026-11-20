@@ -1,0 +1,36 @@
+/* Emagia application launcher — right rail. Existing tokens only; no new colours.
+   Stacking: the rail (z 15) sits below the sticky header (z 20), so header menus open over it, and above page content.
+   The tooltip (z 40) is fixed-positioned; toasts (z 60) move left of the rail. */
+.eal-rail{position:fixed;top:var(--topbar-h);right:0;bottom:0;z-index:15;width:64px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;scrollbar-width:none}
+.eal-rail::-webkit-scrollbar{display:none}
+.eal-list{list-style:none;margin:0;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:10px}
+.eal-btn{display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:9999px;background:transparent;color:var(--text-secondary);cursor:pointer;transition:background-color var(--fast),color var(--fast)}
+.eal-btn:hover{background:var(--surface-subtle-strong);color:var(--text-primary)}
+.eal-btn:focus-visible{outline:none;box-shadow:var(--ring)}
+.eal-btn[aria-current="page"]{background:var(--primary-50);color:var(--primary-500)}
+.eal-tip{position:fixed;z-index:40;transform:translateY(-50%);padding:4px 8px;border-radius:var(--r-xs);background:var(--text-primary);color:var(--text-inverse);font-size:12px;line-height:16px;font-weight:600;white-space:nowrap;box-shadow:var(--shadow-md);pointer-events:none}
+.eal-tip[hidden]{display:none}
+/* reserve the rail's width so no page content sits under it */
+body.eal-on main{margin-right:64px}
+body.eal-on .toasts{right:88px}
+
+/* compact menu (header icon) — shown only below 768px */
+.eal-menu{width:16rem;max-height:min(30rem,calc(100vh - 72px))}
+.eal-mi{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:9999px;background:var(--surface-subtle-strong);color:var(--text-secondary)}
+.eal-menu .eh-item[aria-current="page"] .eal-mi{background:var(--primary-50);color:var(--primary-500)}
+.eal-menu .eh-item[aria-current="page"]{font-weight:600}
+@media (min-width:768px){.eal-menu-wrap{display:none}}
+
+@media (max-width:1023px){
+  .eal-rail{width:56px}
+  .eal-btn{width:36px;height:36px}
+  body.eal-on main{margin-right:56px}
+  body.eal-on .toasts{right:72px}
+}
+@media (max-width:767px){
+  .eal-rail{display:none}
+  body.eal-on main{margin-right:0}
+  body.eal-on .toasts{right:24px}
+}
+@media print{.eal-rail,.eal-tip{display:none!important}body.eal-on main{margin-right:0}}
+@media (prefers-reduced-motion:reduce){.eal-btn{transition:none}}

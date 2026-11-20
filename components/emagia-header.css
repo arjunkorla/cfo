@@ -1,0 +1,176 @@
+/* Emagia global header — component styles.
+   Extends the shared shell styles in each page (.topbar 56px, .tb-left, .tb-right, .crumb, .lang-btn, .user-btn, .user-av,
+   .tb-div, .icon-btn, .menu-btn, .sr-only). Existing tokens only; no new colours. Popovers live inside the sticky
+   .topbar (z-index 20), above page content and below the sidebar drawer (30) and toasts (60). */
+
+/* ---- Brand ---- */
+.eh-brand{display:flex;align-items:center;flex:none;border-radius:9999px;text-decoration:none}
+.eh-brand-link:focus-visible{outline:none;box-shadow:var(--ring)}
+.eh-logo{display:block;width:32px;height:32px;object-fit:contain;border-radius:9999px}
+.eh-brand-text{font-size:15px;line-height:20px;font-weight:700;letter-spacing:.02em;color:var(--text-heading);white-space:nowrap}
+.eh-div{flex:none;width:1px;height:24px;background:var(--border)}
+
+/* ---- Breadcrumbs (base styles from the page .crumb) ---- */
+.crumb ol{min-width:0}
+.crumb li:last-child{min-width:0}
+.crumb [aria-current]{min-width:0}
+.eh-crumb-text{display:flex;align-items:center;gap:6px;padding:4px 6px;color:var(--text-muted);white-space:nowrap}
+.eh-trunc{display:block;min-width:0;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---- Shared popover (menus) ---- */
+.eh-pop{position:absolute;top:calc(100% + 4px);right:0;z-index:1;max-height:min(20rem,calc(100vh - 72px));overflow-y:auto;padding:4px 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);box-shadow:var(--shadow-float)}
+
+/* ---- Menus (Language reference: w-52, max-h-80, rounded-sm, shadow-float, py-1; items py-2.5 pl-10 pr-16 gap-12) ---- */
+.eh-menu-wrap{position:relative;display:flex}
+.eh-menu{min-width:13rem}
+.eh-menu-lang{width:13rem}
+.eh-menu-help{width:15rem}
+.eh-menu-user{width:15rem;max-height:min(32rem,calc(100vh - 72px));padding:4px 0;border-radius:var(--r-md)}
+.eh-item{display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px 10px 10px;border:0;border-left:2px solid transparent;background:transparent;font:inherit;font-size:13px;line-height:18px;color:var(--text-primary);text-align:left;cursor:pointer;transition:background-color var(--fast),border-color var(--fast)}
+.eh-item:hover{border-left-color:var(--primary-500);background:var(--primary-50)}
+.eh-item:focus-visible{outline:none;border-left-color:var(--primary-500);background:var(--primary-50);box-shadow:inset 0 0 0 2px var(--primary-500)}
+.eh-item[aria-checked="true"]{border-left-color:var(--primary-500);background:var(--primary-50);color:var(--primary-700);font-weight:500}
+.eh-item[aria-disabled="true"]{color:var(--text-muted);cursor:not-allowed}
+.eh-item[aria-disabled="true"]:hover{border-left-color:transparent;background:transparent}
+.eh-item-ic{flex:none;color:var(--text-muted)}
+.eh-item-text{display:flex;flex-direction:column;min-width:0}
+.eh-item-sub{font-size:12px;line-height:16px;font-weight:400;color:var(--text-muted)}
+.eh-flag{flex:none;width:1rem;height:.75rem;object-fit:cover;outline:1px solid var(--border);outline-offset:-1px}
+.eh-sep{height:1px;margin:4px 0;background:var(--border)}
+.eh-identity{display:flex;flex-direction:column;padding:8px 16px 12px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.eh-identity-name{font-size:13px;line-height:18px;font-weight:600;color:var(--text-primary)}
+.eh-identity-note{font-size:12px;line-height:16px;color:var(--text-muted)}
+/* System Admin rows: whole row clickable, circular icon background, subtle hover, visible inset focus ring */
+/* compact rows (48px: 10px padding + 28px circle, 13px text; approved 2026-11-16) — hover and keyboard focus share one
+   treatment: #EEF2FC (--primary-50) + a 3px brand bar drawn as an inset shadow, so nothing shifts; focus adds a 2px inset
+   outline. The circle turns white on the tinted row so it stays visible. Logout: its own text colour at 10% + 3px bar. */
+.eh-menu-user .eh-item{gap:10px;padding:.625rem 10px;border-left:0;font-size:13px;line-height:18px;font-weight:500;white-space:nowrap;transition:background-color var(--fast),box-shadow var(--fast)}
+.eh-menu-user .eh-item:hover,.eh-menu-user .eh-item:focus-visible{background:var(--primary-50);box-shadow:inset 3px 0 0 var(--primary-500)}
+.eh-menu-user .eh-item:hover .eh-av-ic,.eh-menu-user .eh-item:focus-visible .eh-av-ic{background:var(--surface)}
+.eh-menu-user .eh-item:focus-visible{outline:2px solid var(--primary-500);outline-offset:-2px}
+.eh-menu-user .eh-item.is-danger:hover,.eh-menu-user .eh-item.is-danger:focus-visible{background:color-mix(in srgb,var(--error-text) 10%,transparent);box-shadow:inset 3px 0 0 var(--error-text)}
+.eh-menu-user .eh-item.is-danger:focus-visible{outline-color:var(--error-text)}
+.eh-av-ic{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:9999px;background:var(--primary-50);color:var(--primary-500)}
+.eh-item.is-danger{color:var(--error-text)}
+.eh-item.is-danger .eh-av-ic{background:var(--error-bg);color:var(--error-text)}
+.eh-menu-user .eh-sep{margin:4px 0}
+.eh-chev{transition:transform var(--fast)}
+[aria-expanded="true"]>.eh-chev{transform:rotate(180deg)}
+
+/* ---- Modal (one shared same-page popup; native <dialog> in the top layer, above sidebar, header and toasts) ---- */
+.eh-dialog{width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 64px);padding:0;border:0;border-radius:var(--r-lg);background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow-lg);overflow:hidden}
+.eh-dialog[open]{display:flex;flex-direction:column}
+.eh-dialog.eh-dlg-sm{width:min(440px,calc(100vw - 32px))}
+.eh-dialog.eh-dlg-lg{width:min(640px,calc(100vw - 32px))}
+.eh-dialog::backdrop{background:rgba(30,32,36,.5)}
+.eh-dlg-head{flex:none;display:flex;align-items:flex-start;gap:12px;padding:16px 16px 16px 24px;border-bottom:1px solid var(--border)}
+.eh-dlg-icon{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9999px;background:var(--primary-50);color:var(--primary-500)}
+.eh-dlg-titles{flex:1;min-width:0;padding-top:1px}
+.eh-dlg-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--text-heading)}
+.eh-dlg-desc{margin:2px 0 0;font-size:13px;line-height:18px;color:var(--text-secondary)}
+.eh-dlg-desc:empty{display:none}
+.eh-dlg-close{flex:none}
+.eh-dlg-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:16px 24px 20px;font-size:13px;line-height:20px;color:var(--text-secondary)}
+.eh-dlg-body h3{margin:16px 0 6px;font-size:14px;line-height:20px;font-weight:600;color:var(--text-heading)}
+.eh-dlg-body h3:first-child{margin-top:0}
+.eh-dlg-body ul{margin:0;padding-left:18px}
+.eh-dlg-body li+li{margin-top:4px}
+.eh-dlg-body p{margin:0 0 10px}
+.eh-dlg-foot{flex:none;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:12px 24px 16px;border-top:1px solid var(--border)}
+.eh-dlg-foot[hidden]{display:none}
+.eh-dialog .btn{cursor:pointer}
+.eh-dialog .btn-primary[aria-disabled="true"]{background:var(--gray-300);color:var(--text-muted);cursor:not-allowed}
+.eh-keys{width:100%;border-collapse:collapse}
+.eh-keys td{padding:6px 0;vertical-align:top;border-bottom:1px solid var(--border)}
+.eh-keys td:first-child{width:40%;padding-right:12px;white-space:nowrap}
+.eh-key{display:inline-block;min-width:22px;padding:1px 6px;border:1px solid var(--border-control);border-radius:var(--r-xs);background:var(--surface-subtle);font:500 12px/18px "JetBrains Mono",ui-monospace,monospace;color:var(--text-secondary);text-align:center}
+/* notices (what is and isn't connected) and the result of a prototype-only action */
+.eh-notice,.eh-status{display:flex;align-items:flex-start;gap:8px;margin:0 0 16px;padding:10px 12px;border-radius:var(--r-control);font-size:13px;line-height:18px}
+.eh-notice{background:var(--info-bg);color:var(--info-text)}
+.eh-dlg-body .eh-notice:last-child{margin-bottom:0}
+.eh-notice-ic{flex:none;margin-top:1px}
+.eh-status{display:none;margin:16px 0 0;background:var(--warning-bg);color:var(--warning-text)}
+.eh-status.is-shown{display:flex}
+/* forms (reuse page .field / .ctl / .t-label) */
+.eh-form{display:flex;flex-direction:column;gap:16px}
+.eh-form-note{margin:0!important;font-size:12px;line-height:16px;color:var(--text-muted)}
+.eh-ctl{width:100%;font:inherit;font-size:13px}
+textarea.eh-ctl{height:auto;min-height:96px;padding:8px 12px;resize:vertical}
+.eh-pw{position:relative;display:flex}
+.eh-pw .eh-ctl{padding-right:40px}
+.eh-pw-toggle{position:absolute;top:2px;right:2px}
+.eh-field-err{margin:0!important;font-size:12px;line-height:16px;color:var(--error-text)}
+/* switches: state shown by thumb position + On/Off text, not colour alone */
+.eh-switches{list-style:none;margin:0;padding:0}
+.eh-sw-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--border)}
+.eh-sw-row:last-child{border-bottom:0}
+.eh-sw-text{display:flex;flex-direction:column;min-width:0}
+.eh-sw-label{font-size:13px;line-height:18px;font-weight:600;color:var(--text-primary)}
+.eh-sw-desc{font-size:12px;line-height:16px;color:var(--text-muted)}
+.eh-switch{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:4px 6px;border:0;border-radius:9999px;background:transparent;font:inherit;cursor:pointer}
+.eh-switch:focus-visible{outline:none;box-shadow:var(--ring)}
+.eh-switch-track{position:relative;width:36px;height:20px;border-radius:9999px;background:var(--text-muted);transition:background-color var(--fast)}
+.eh-switch-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:9999px;background:var(--surface);transition:transform var(--fast)}
+.eh-switch[aria-checked="true"] .eh-switch-track{background:var(--primary-500)}
+.eh-switch[aria-checked="true"] .eh-switch-thumb{transform:translateX(16px)}
+.eh-switch-state{width:22px;font-size:12px;line-height:16px;font-weight:600;color:var(--text-secondary);text-align:left}
+/* Global Search popup */
+.eh-dialog.eh-dlg-search{width:min(720px,calc(100vw - 32px));max-height:min(78vh,calc(100vh - 32px));border:1px solid var(--border)}
+.eh-dlg-search .eh-dlg-icon{display:none}
+.eh-dlg-search .eh-dlg-head{align-items:center;padding:20px 20px 12px 32px;border-bottom:0}
+.eh-dlg-search .eh-dlg-head h2{font-size:22px;line-height:28px;font-weight:600}
+.eh-dlg-search .eh-dlg-body{display:flex;flex-direction:column;overflow:hidden;padding:4px 32px 16px}
+.eh-sr-box{position:relative;flex:none;display:flex;align-items:center;margin-bottom:12px}
+.eh-sr-ic{position:absolute;left:14px;display:flex;color:var(--text-muted);pointer-events:none}
+.eh-sr-input{width:100%;height:44px;padding:0 44px;border:1px solid var(--border-control);border-radius:var(--r-control);background:var(--surface);color:var(--text-primary);font:inherit;font-size:14px;transition:border-color var(--fast)}
+.eh-sr-input::placeholder{color:var(--text-muted)}
+.eh-sr-input:hover{border-color:var(--border-strong)}
+.eh-sr-input:focus{outline:none;border-color:var(--primary-500);box-shadow:0 0 0 2px var(--primary-500)}
+.eh-sr-clear{position:absolute;right:6px}
+.eh-sr-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;margin:0 -8px;padding:0 8px}
+.eh-sr-group+.eh-sr-group{margin-top:8px}
+.eh-sr-head{padding:6px 6px 4px;font-size:12px;line-height:16px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
+.eh-sr-opt{display:flex;align-items:flex-start;gap:12px;padding:8px 16px;border-radius:var(--r-control);cursor:pointer}
+/* highlighted option: light-blue background + an "↵ open" hint (a non-colour cue); no left indicator, no shift */
+.eh-sr-opt[aria-selected="true"]{background:var(--primary-50)}
+.eh-sr-enter{flex:none;align-self:center;margin-left:auto;visibility:hidden;padding:0 6px;border:1px solid var(--primary-200);border-radius:var(--r-xs);background:var(--surface);font-size:11px;line-height:18px;font-weight:600;color:var(--primary-500)}
+.eh-sr-opt[aria-selected="true"] .eh-sr-enter{visibility:visible}
+.eh-sr-opt-ic{flex:none;display:flex;margin-top:2px;color:var(--primary-500)}
+.eh-sr-opt-text{display:flex;flex-direction:column;min-width:0}
+.eh-sr-opt-title{font-size:14px;line-height:20px;font-weight:500;color:var(--text-primary)}
+.eh-sr-opt-title mark{background:transparent;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.eh-sr-opt-sub{font-size:13px;line-height:18px;color:var(--text-secondary)}
+.eh-sr-opt-desc{font-size:12px;line-height:16px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eh-dlg-body .eh-sr-note{margin:8px 6px;font-size:13px;line-height:18px;color:var(--text-secondary)}
+.eh-sr-foot{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;min-height:32px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;line-height:16px;color:var(--text-muted)}
+.eh-sr-hints .eh-key{min-width:20px;padding:0 4px;font-size:11px;line-height:16px}
+.eh-sr-foot .btn{cursor:pointer}
+/* honest empty state */
+.eh-empty{display:flex;flex-direction:column;align-items:center;padding:24px 8px 8px;text-align:center}
+.eh-empty-ic{display:grid;place-items:center;width:48px;height:48px;margin-bottom:12px;border-radius:9999px;background:var(--surface-subtle-strong);color:var(--text-muted)}
+.eh-empty-title{margin:0 0 4px!important;font-size:14px;line-height:20px;font-weight:600;color:var(--text-heading)}
+.eh-empty-text{margin:0!important;max-width:340px}
+@media (prefers-reduced-motion:reduce){.eh-switch-track,.eh-switch-thumb{transition:none}}
+@media (max-width:767px){
+  .eh-dialog,.eh-dialog.eh-dlg-sm,.eh-dialog.eh-dlg-lg{max-height:calc(100vh - 32px)}
+  .eh-dlg-head{padding:12px 12px 12px 16px}
+  .eh-dlg-body{padding:16px}
+  .eh-dlg-foot{padding:12px 16px}
+  .eh-keys td:first-child{width:auto}
+  .eh-dlg-search .eh-dlg-head{padding:16px 12px 8px 16px}
+  .eh-dlg-search .eh-dlg-head h2{font-size:18px;line-height:24px}
+  .eh-dlg-search .eh-dlg-body{padding:4px 16px 12px}
+  .eh-sr-hints{display:none}
+  .eh-sr-foot{display:none}
+  .eh-sr-foot:has(.btn:not([hidden])){display:flex}
+}
+
+/* ---- Responsive ---- */
+@media (max-width:1279px){
+  .topbar .user-name{display:none}
+  .eh-trunc{max-width:140px}
+}
+@media (max-width:1023px){
+  .eh-div{display:none}
+  .eh-logo{width:28px;height:28px}
+}

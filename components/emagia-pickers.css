@@ -1,0 +1,102 @@
+/* Emagia pickers — shared popup surface for Select dropdowns and the Calendar date picker (approved 2026-11-16).
+   Both popups share one surface: --surface, 1px --border, 8px top / 12px (--r-md) bottom corners, --shadow-float,
+   4px vertical padding, 4px gap below the control, a 120ms fade + 4px slide (none with reduced motion), top layer
+   (never clipped by panels; above the header). Scoped to select.ctl and .edp-* only. */
+
+/* ---------- Select dropdown (customizable <select>; native behaviour, values and keyboard kept) ----------
+   Browsers without appearance:base-select keep the native popup unchanged. */
+@supports (appearance: base-select) {
+  select.ctl, select.ctl::picker(select) { appearance: base-select }
+  select.ctl { display: inline-flex; align-items: center; font: inherit; line-height: 20px; color: var(--text-primary) }
+  select.ctl::picker-icon { display: none } /* the existing chevron (background image) stays */
+  select.ctl selectedcontent { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis }
+  select.ctl:open { border-color: var(--primary-500); box-shadow: 0 0 0 2px var(--primary-500) }
+
+  select.ctl::picker(select) {
+    box-sizing: border-box; min-inline-size: anchor-size(inline); max-block-size: min(20rem, calc(100vh - 96px));
+    margin: 4px 0; padding: 4px 0; overflow-y: auto;
+    background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);
+    border-radius: var(--r-control) var(--r-control) var(--r-md) var(--r-md); box-shadow: var(--shadow-float);
+    opacity: 1; translate: 0 0;
+    transition: opacity var(--fast) ease-out, translate var(--fast) ease-out, display var(--fast) allow-discrete, overlay var(--fast) allow-discrete;
+  }
+  select.ctl:not(:open)::picker(select) { opacity: 0; translate: 0 -4px }
+  @starting-style { select.ctl:open::picker(select) { opacity: 0; translate: 0 -4px } }
+
+  select.ctl option {
+    display: flex; align-items: center; gap: 12px; min-block-size: 36px; padding: 8px 12px;
+    font: inherit; line-height: 20px; color: var(--text-primary); white-space: nowrap; text-align: left;
+    border: 0; border-radius: 0; background: transparent; cursor: pointer; outline: none;
+    transition: background-color var(--fast);
+  }
+  select.ctl option::checkmark {
+    order: 1; margin-inline-start: auto; content: ""; flex: none; width: 16px; height: 16px; background: var(--primary-500);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/16px 16px no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/16px 16px no-repeat;
+  }
+  select.ctl option:hover, select.ctl option:focus-visible { background: color-mix(in srgb, var(--primary-50) 60%, var(--surface)) }
+  select.ctl option:checked { background: var(--primary-50); box-shadow: inset 2px 0 0 var(--primary-500); color: var(--primary-600); font-weight: 600 }
+  select.ctl option:focus-visible { outline: 2px solid var(--primary-500); outline-offset: -2px }
+  select.ctl option:disabled { color: var(--text-muted); cursor: not-allowed; background: transparent }
+}
+
+/* ---------- Calendar date picker (components/emagia-datepicker.js) ---------- */
+.edp-wrap { position: relative; display: block }
+input[type=date].ctl.edp-input { padding-right: 40px }
+input[type=date].ctl.edp-input::-webkit-calendar-picker-indicator { display: none } /* our popup replaces the native one */
+.edp-btn {
+  position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: var(--r-xs); background: transparent; color: var(--text-muted); cursor: pointer; transition: background-color var(--fast), color var(--fast);
+}
+.edp-btn:hover, .edp-btn[aria-expanded="true"] { background: var(--primary-50); color: var(--primary-500) }
+.edp-btn:focus-visible { outline: 2px solid var(--primary-500); outline-offset: -2px; color: var(--primary-500) }
+.edp-btn:disabled { color: var(--text-muted); background: transparent; cursor: not-allowed }
+.edp-input[aria-expanded="true"], .edp-wrap.is-open .edp-input { border-color: var(--primary-500) }
+
+.edp-pop {
+  position: fixed; inset: auto; margin: 0; box-sizing: border-box; width: 296px; max-width: calc(100vw - 16px); padding: 12px;
+  background: var(--surface); color: var(--text-primary); border: 1px solid var(--border);
+  border-radius: var(--r-control) var(--r-control) var(--r-md) var(--r-md); box-shadow: var(--shadow-float);
+  font-size: 14px; line-height: 20px; overflow: visible;
+  opacity: 1; translate: 0 0;
+  transition: opacity var(--fast) ease-out, translate var(--fast) ease-out, display var(--fast) allow-discrete, overlay var(--fast) allow-discrete;
+}
+.edp-pop:not(:popover-open) { opacity: 0; translate: 0 -4px }
+@starting-style { .edp-pop:popover-open { opacity: 0; translate: 0 -4px } }
+.edp-head { display: flex; align-items: center; gap: 4px; margin-bottom: 8px }
+.edp-title { flex: 1; margin: 0; text-align: center; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--text-heading) }
+.edp-nav {
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: var(--r-xs);
+  background: transparent; color: var(--text-secondary); cursor: pointer; transition: background-color var(--fast), color var(--fast);
+}
+.edp-nav:hover { background: var(--primary-50); color: var(--primary-500) }
+.edp-nav:focus-visible { outline: 2px solid var(--primary-500); outline-offset: -2px }
+.edp-grid { border-collapse: separate; border-spacing: 2px; table-layout: fixed; margin: 0 -2px; width: calc(100% + 4px) }
+.edp-grid th { padding: 0 0 4px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text-muted); text-align: center }
+.edp-grid td { padding: 0; text-align: center }
+.edp-day {
+  box-sizing: border-box; height: 36px; vertical-align: middle; text-align: center;
+  border: 1px solid transparent; border-radius: var(--r-xs); font-variant-numeric: tabular-nums; color: var(--text-primary);
+  cursor: pointer; outline: none; transition: background-color var(--fast), color var(--fast);
+}
+.edp-day:hover { background-color: var(--primary-50); color: var(--primary-600) }
+.edp-day.is-other { color: var(--text-muted) }
+/* today: bold primary number + dot below (not colour alone); selected: filled primary (white dot when both) */
+.edp-day.is-today { color: var(--primary-500); font-weight: 700; background-image: radial-gradient(circle at 50% calc(100% - 5px), var(--primary-500) 2px, transparent 2.5px) }
+.edp-day.is-selected, .edp-day.is-selected:hover { background-color: var(--primary-500); border-color: var(--primary-500); color: var(--text-inverse); font-weight: 600 }
+.edp-day.is-selected.is-today { background-image: radial-gradient(circle at 50% calc(100% - 5px), var(--text-inverse) 2px, transparent 2.5px) }
+.edp-day:focus-visible { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary-500) }
+.edp-day.is-disabled, .edp-day.is-disabled:hover { background: transparent; color: var(--border-strong); text-decoration: line-through; cursor: not-allowed }
+.edp-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border) }
+.edp-link {
+  height: 32px; padding: 0 10px; border: 0; border-radius: var(--r-xs); background: transparent; font: inherit; font-size: 13px; font-weight: 600;
+  color: var(--primary-500); cursor: pointer; transition: background-color var(--fast);
+}
+.edp-link:hover { background: var(--primary-50) }
+.edp-link:focus-visible { outline: 2px solid var(--primary-500); outline-offset: -2px }
+.edp-link:disabled { color: var(--text-muted); background: transparent; cursor: not-allowed }
+
+@media (prefers-reduced-motion: reduce) {
+  select.ctl::picker(select), .edp-pop { transition: none }
+}
+@media print { .edp-pop, .edp-btn { display: none !important } }

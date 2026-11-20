@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CFO Workspace · ERMS Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== ERMS Admin design tokens — mirrored from src/index.css + tailwind.config.js ===== */
+:root{
+  --primary-50:#EEF2FC;--primary-100:#D9E2F8;--primary-200:#AABEEE;--primary-300:#6E90E3;--primary-400:#2E60D6;
+  --primary-500:#1E439B;--primary-600:#193780;--primary-700:#12295E;--primary-800:#0C1C40;
+  --gray-50:#F9FAFA;--gray-100:#F2F3F5;--gray-200:#E6E7EA;--gray-300:#D3D4DA;--gray-400:#A6AAB5;--gray-600:#616775;--gray-700:#4A4E59;--gray-900:#1E2024;
+  --text-heading:var(--primary-800);--text-primary:var(--gray-900);--text-secondary:var(--gray-600);--text-muted:#6B7080;--text-inverse:#FFFFFF;
+  --surface:#FFFFFF;--background:var(--gray-50);--surface-subtle:var(--gray-50);--surface-subtle-strong:var(--gray-100);
+  --border:var(--gray-200);--border-strong:var(--gray-400);--border-control:var(--gray-300);
+  --accent:#128091;--accent-light:#EBF7F9;--accent-text:#117A8A;
+  --success:#08853F;--success-bg:#E7F9EE;--success-text:#07753A;
+  --warning:#A65807;--warning-bg:#FBF0DF;--warning-text:#8F4F06;
+  --error:#DC2626;--error-bg:#FDEAEA;--error-text:#C81E1E;
+  --info:#1D74D6;--info-bg:#E8F1FC;--info-text:#1A65BD;
+  --chart-1:#08853F;--chart-2:#C5478A;--chart-3:#C56A1F;--chart-4:#128091;--chart-5:#1D74D6;
+  --r-control:8px;--r-xs:6px;--r-sm:10px;--r-md:12px;--r-lg:16px;--r-full:9999px;
+  --shadow-xs:0 1px 2px rgba(30,67,155,.04);
+  --shadow-sm:0 2px 4px rgba(30,67,155,.06),0 1px 2px rgba(30,67,155,.04);
+  --shadow-md:0 4px 10px rgba(30,67,155,.08),0 2px 4px rgba(30,67,155,.05);
+  --shadow-lg:0 16px 32px rgba(30,67,155,.12),0 4px 8px rgba(30,67,155,.06);
+  --shadow-float:0 24px 48px rgba(30,67,155,.16),0 8px 16px rgba(30,67,155,.08),0 2px 4px rgba(30,67,155,.05);
+  --g-hero:linear-gradient(135deg,#1E439B 0%,#4338CA 100%);
+  --g-sidebar:linear-gradient(180deg,#1E439B 0%,#12295E 100%);
+  --g-primary:linear-gradient(135deg,#1E439B 0%,#193780 100%);
+  --g-primary-hover:linear-gradient(135deg,#193780 0%,#12295E 100%);
+  --g-primary-active:linear-gradient(135deg,#12295E 0%,#0C1C40 100%);
+  --g-accent:linear-gradient(135deg,#128091 0%,#0D606D 100%);
+  --g-surface-primary:linear-gradient(135deg,#EEF2FC 0%,#FFFFFF 100%);
+  --g-secondary:linear-gradient(135deg,#FFFFFF 0%,#EEF2FC 100%);
+  --g-secondary-hover:linear-gradient(135deg,#EEF2FC 0%,#D9E2F8 100%);
+  --g-secondary-active:linear-gradient(135deg,#D9E2F8 0%,#AABEEE 100%);
+  --fast:120ms;--base:160ms;
+  --ring:0 0 0 2px var(--surface),0 0 0 4px var(--primary-500);
+  --sidebar-w:88px;--topbar-h:56px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:14px;line-height:20px;color:var(--text-primary);background:var(--background);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-feature-settings:'cv11','ss01'}
+a{color:var(--primary-500)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+:focus-visible{outline:none}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.font-data{font-family:"JetBrains Mono",ui-monospace,"Cascadia Code",Consolas,monospace;font-variant-numeric:tabular-nums}
+.ic{display:inline-flex;flex:none;line-height:0}
+.ic svg{display:block}
+.skip{position:fixed;left:104px;top:-48px;z-index:100;background:var(--primary-500);color:#fff;padding:8px 16px;border-radius:var(--r-control);text-decoration:none;font-weight:600}
+.skip:focus{top:8px;box-shadow:var(--ring)}
+.themed-scrollbar::-webkit-scrollbar{height:8px;width:8px}
+.themed-scrollbar::-webkit-scrollbar-track{background:transparent}
+.themed-scrollbar::-webkit-scrollbar-thumb{background-color:var(--border-strong);border-radius:9999px}
+
+/* ===== Type scale ===== */
+.t-h3{font-size:22px;line-height:28px;font-weight:600}
+.t-h4{font-size:16px;line-height:22px;font-weight:700}
+.t-h5{font-size:14px;line-height:20px;font-weight:600}
+.t-h6{font-size:12px;line-height:16px;font-weight:600;letter-spacing:.03em}
+.t-body-sm{font-size:13px;line-height:18px;font-weight:500}
+.t-caption{font-size:12px;line-height:16px;font-weight:400}
+.t-micro{font-size:10px;line-height:12px;font-weight:600;letter-spacing:.04em}
+.t-label{font-size:12px;line-height:16px;font-weight:600;color:var(--text-secondary)}
+.c-heading{color:var(--text-heading)}.c-secondary{color:var(--text-secondary)}.c-muted{color:var(--text-muted)}
+
+/* ===== Sidebar (88px stacked, gradient) ===== */
+.sidebar{position:fixed;inset:0 auto 0 0;z-index:30;width:var(--sidebar-w);display:flex;flex-direction:column;background:var(--g-sidebar);padding:16px 0;transition:transform var(--base)}
+.sb-logo{display:flex;justify-content:center;padding:4px 8px;margin-bottom:12px}
+.sb-logo a{display:flex;border-radius:9999px}
+.sb-logo a:focus-visible{box-shadow:0 0 0 2px var(--primary-500),0 0 0 4px #fff}
+.sb-logo img{border-radius:9999px}
+.sb-nav{flex:1;display:flex;flex-direction:column;gap:4px;overflow-y:auto;padding:0 8px;scrollbar-width:none}
+.sb-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;border-radius:var(--r-control);color:#fff;text-decoration:none;text-align:center;font-size:9px;line-height:11px;letter-spacing:.02em;font-weight:600;text-transform:uppercase;transition:background-color var(--fast)}
+.sb-item:hover{background:rgba(255,255,255,.12)}
+.sb-item[aria-current="page"]{background:#fff;color:var(--primary-700)}
+.sb-item:focus-visible{box-shadow:0 0 0 2px var(--primary-500),0 0 0 4px #fff}
+.sb-foot{display:flex;justify-content:center;padding:12px 8px 0;margin-top:8px}
+.sb-foot img{opacity:.9;height:auto}
+.sb-scrim{position:fixed;inset:0;z-index:25;background:rgba(30,32,36,.5)}
+
+/* ===== Topbar ===== */
+.content{padding-left:var(--sidebar-w);min-width:0}
+.topbar{position:sticky;top:0;z-index:20;height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tb-left{display:flex;align-items:center;gap:16px;min-width:0}
+.tb-right{display:flex;align-items:center;gap:8px;flex:none}
+.crumb ol{list-style:none;margin:0;display:flex;align-items:center;gap:4px;min-width:0;background:var(--surface-subtle);border-radius:var(--r-md);padding:6px 10px}
+.crumb li{display:flex;align-items:center;gap:4px;min-width:0}
+.crumb a,.crumb [aria-current]{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:var(--r-xs);text-decoration:none;white-space:nowrap}
+.crumb a{color:var(--text-muted)}
+.crumb a:hover{background:var(--surface);color:var(--text-secondary)}
+.crumb a:focus-visible{box-shadow:0 0 0 2px var(--primary-500)}
+.crumb [aria-current]{color:var(--primary-500);font-weight:600}
+.crumb .sep{color:var(--text-muted)}
+.lang-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid var(--border);border-radius:var(--r-control);background:var(--surface);font-size:13px;font-weight:500;color:var(--text-primary)}
+.lang-btn:hover{background:var(--surface-subtle)}
+.lang-btn img{width:18px;height:12px;border-radius:2px}
+.user-btn{display:flex;align-items:center;gap:8px;padding:4px 4px 4px 8px;border:1px solid transparent;border-radius:var(--r-control);background:transparent}
+.user-btn:hover{background:var(--surface-subtle)}
+.user-av{width:32px;height:32px;border-radius:9999px;background:var(--warning-bg);color:var(--warning-text);display:grid;place-items:center;font-size:13px;font-weight:600}
+.tb-div{border-left:1px solid var(--border);padding-left:12px;margin-left:4px}
+
+
+/* ===== Buttons ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;border-radius:var(--r-control);font-size:13px;line-height:16px;font-weight:600;height:36px;padding:0 16px;border:0;transition:background var(--fast),color var(--fast),border-color var(--fast);text-decoration:none}
+.btn-sm{height:32px;padding:0 12px}
+.btn-primary{background:var(--g-primary);color:var(--text-inverse)}
+.btn-primary:hover{background:var(--g-primary-hover)}
+.btn-primary:active{background:var(--g-primary-active)}
+.btn-primary:disabled{background:var(--gray-300);color:var(--text-muted)}
+.btn-secondary{background:var(--g-secondary);color:var(--text-secondary);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--g-secondary-hover);color:var(--text-primary)}
+.btn-secondary:active{background:var(--g-secondary-active)}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--surface-subtle);color:var(--text-primary)}
+.btn:focus-visible,.icon-btn:focus-visible,.lang-btn:focus-visible,.user-btn:focus-visible,.pill:focus-visible,.chip:focus-visible{box-shadow:var(--ring)}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32px;height:32px;border:0;border-radius:9999px;background:transparent;color:var(--text-muted);transition:background-color var(--fast),color var(--fast)}
+.icon-btn.md{width:36px;height:36px}
+.icon-btn:hover{background:var(--surface-subtle-strong);color:var(--text-primary)}
+.icon-btn[aria-pressed="true"]{background:var(--primary-50);color:var(--primary-500)}
+.icon-btn:disabled{opacity:.5}
+.icon-btn.menu-btn{display:none}
+
+/* ===== Form controls ===== */
+.field{display:flex;flex-direction:column;gap:4px}
+.ctl{height:36px;border:1px solid var(--border-control);border-radius:var(--r-control);background:var(--surface);color:var(--text-primary);padding:0 12px;transition:border-color var(--fast)}
+.ctl::placeholder{color:var(--text-muted)}
+.ctl:hover{border-color:var(--border-strong)}
+.ctl:focus{outline:none;border-color:var(--primary-500);box-shadow:0 0 0 2px var(--primary-500)}
+.ctl[aria-invalid="true"]{border-color:var(--error)}
+select.ctl{appearance:none;padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7080' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+textarea.ctl{height:auto;min-height:88px;padding:8px 12px;resize:vertical;width:100%}
+.search-wrap{position:relative}
+.search-wrap .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
+.search-wrap .ctl{width:100%;padding-left:36px}
+
+/* ===== Card / badges ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--shadow-xs)}
+.ai-tag{display:inline-flex;align-items:center;gap:4px;flex:none;border-radius:9999px;padding:2px 6px;font-size:10px;line-height:12px;font-weight:600;letter-spacing:.04em;background:var(--accent-light);color:var(--accent-text)}
+.ai-tag.mock{background:var(--gray-100);color:var(--gray-700)}
+.icon-badge{display:flex;align-items:center;justify-content:center;flex:none;border-radius:9999px;width:40px;height:40px;background:linear-gradient(to bottom right,var(--primary-50),var(--primary-100));color:var(--primary-500)}
+.icon-badge.sm{width:28px;height:28px}
+.icon-badge.info{background:linear-gradient(to bottom right,rgba(29,116,214,.1),rgba(29,116,214,.2));color:var(--info-text)}
+.icon-badge.success{background:linear-gradient(to bottom right,rgba(8,133,63,.1),rgba(8,133,63,.2));color:var(--success-text)}
+.icon-badge.warning{background:linear-gradient(to bottom right,rgba(166,88,7,.1),rgba(166,88,7,.2));color:var(--warning-text)}
+.icon-badge.error{background:linear-gradient(to bottom right,rgba(220,38,38,.1),rgba(220,38,38,.2));color:var(--error-text)}
+
+/* ===== Toast (bottom-right, as ToastProvider) ===== */
+.toasts{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 16px;font-size:13px;line-height:18px;font-weight:500;box-shadow:var(--shadow-md);animation:toast-in 160ms cubic-bezier(.16,1,.3,1)}
+.toast.info{background:var(--info-bg);color:var(--info-text)}
+.toast.success{background:var(--success-bg);color:var(--success-text)}
+.toast.error{background:var(--error-bg);color:var(--error-text)}
+.toast button{border:0;background:transparent;color:inherit;opacity:.7;margin-left:8px;padding:2px;border-radius:4px;display:flex}
+.toast button:hover{opacity:1}
+.toast.leaving{animation:toast-out 120ms ease-in forwards}
+@keyframes toast-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@keyframes toast-out{from{opacity:1}to{opacity:0;transform:translateX(12px)}}
+
+@media (max-width:1023px){
+  .sidebar{transform:translateX(-100%)}
+  body.nav-open .sidebar{transform:none}
+  .content{padding-left:0}
+  .icon-btn.menu-btn{display:inline-flex}
+  .crumb{display:none}
+  .skip{left:16px}
+}
+@media (max-width:767px){
+  .topbar{padding:0 16px}
+  .user-name,.lang-label{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Page: CFO Workspace ===== */
+body{overflow:hidden}
+.content{height:100vh;display:flex;flex-direction:column}
+main{flex:1;min-height:0;display:flex;flex-direction:column;padding:16px 24px 24px;gap:16px}
+
+/* Category switcher — same pattern as ModuleTabsLayout / TabStrip */
+.tabstrip{display:flex;gap:16px;overflow-x:auto;border-bottom:1px solid var(--border);flex:none;scrollbar-width:thin;scrollbar-color:var(--gray-300) transparent}
+.tab{display:flex;align-items:center;gap:6px;white-space:nowrap;border:0;border-bottom:3px solid transparent;border-radius:var(--r-control) var(--r-control) 0 0;background:transparent;padding:12px;font-size:12px;line-height:16px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--text-secondary);transition:background-color var(--fast),color var(--fast)}
+.tab:hover{background:var(--surface-subtle);color:var(--primary-500)}
+.tab[aria-selected="true"]{border-bottom-color:var(--primary-500);background:var(--primary-50);color:var(--primary-500)}
+.tab:focus-visible{box-shadow:inset 0 0 0 2px var(--primary-500)}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px 16px;padding:12px 16px;flex:none}
+.toolbar input[type=date].ctl{width:148px}
+.toolbar select.ctl{width:160px}
+/* Date fields (native picker, refined 2026-11-16): calm separators, token-coloured calendar icon (primary on hover/focus) */
+input[type=date].ctl{padding:0 8px 0 12px;font-size:13px;color:var(--text-primary);cursor:text}
+input[type=date].ctl::-webkit-datetime-edit-fields-wrapper{padding:0}
+input[type=date].ctl::-webkit-datetime-edit-text{padding:0 1px;color:var(--text-muted)}
+input[type=date].ctl::-webkit-calendar-picker-indicator{width:16px;height:16px;margin:0 0 0 8px;padding:4px;border-radius:var(--r-xs);background:var(--text-muted);opacity:1;cursor:pointer;transition:background-color var(--fast);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3Crect width='18' height='18' x='3' y='4' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3C/svg%3E") center/16px 16px no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2v4'/%3E%3Cpath d='M16 2v4'/%3E%3Crect width='18' height='18' x='3' y='4' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3C/svg%3E") center/16px 16px no-repeat}
+input[type=date].ctl:hover::-webkit-calendar-picker-indicator,input[type=date].ctl:focus::-webkit-calendar-picker-indicator{background:var(--primary-500)}
+input[type=date].ctl:disabled,select.ctl:disabled{background-color:var(--surface-subtle);color:var(--text-muted);border-color:var(--border);cursor:not-allowed}
+select.ctl{cursor:pointer;text-overflow:ellipsis}
+.toolbar #model{width:auto;min-width:160px} /* sized to the longest approved model id: no clipping */
+.tb-sep{width:1px;height:36px;background:var(--border)}
+.tb-end{margin-left:auto;display:flex;align-items:center;gap:8px}
+.kbd{font-family:inherit;font-size:10px;line-height:16px;font-weight:600;padding:0 6px;border-radius:4px;background:rgba(255,255,255,.18)}
+.date-err{width:100%;margin:-4px 0 0;color:var(--error-text);font-size:12px;line-height:16px}
+.pills{display:flex;gap:6px;height:36px;align-items:center}
+.pill{height:32px;padding:0 12px;border:1px solid var(--border);border-radius:9999px;background:var(--surface);color:var(--text-secondary);font-size:13px;line-height:18px;font-weight:500;transition:background-color var(--fast),border-color var(--fast),color var(--fast)}
+.pill:hover{background:var(--surface-subtle);color:var(--text-primary)}
+.pill[aria-pressed="true"]{background:var(--primary-50);border-color:var(--primary-300);color:var(--primary-500);font-weight:600}
+
+/* Workspace grid */
+.ws{flex:1;min-height:0;display:grid;grid-template-columns:var(--left-w,280px) minmax(0,1fr) var(--right-w,clamp(320px,30vw,440px));gap:16px}
+.ws.left-collapsed{--left-w:64px}
+.ws.right-collapsed{--right-w:48px}
+.ws.has-focus{grid-template-columns:minmax(0,1fr)}
+.ws.has-focus>.panel:not(.is-focused){display:none}
+.panel{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.panel-head{display:flex;align-items:center;gap:4px;min-height:56px;padding:8px 8px 8px 16px;border-bottom:1px solid var(--border);flex:none}
+.panel-head h2{margin:0;flex:1;min-width:0;font-size:14px;line-height:20px;font-weight:600;color:var(--text-heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panel-body{flex:1;min-height:0;overflow:auto}
+
+/* Agents */
+.agent-search{padding:12px 16px 8px}
+.agent-list{list-style:none;margin:0;padding:4px 8px 8px}
+.agent-row{display:flex;align-items:center;gap:4px;margin-bottom:2px;border-radius:var(--r-control);transition:background-color var(--fast)}
+.agent-row:hover{background:var(--surface-subtle)}
+.agent-row.active{background:var(--primary-50)}
+.agent-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 4px 8px 10px;border:0;background:transparent;text-align:left;border-radius:var(--r-control)}
+.agent-main:focus-visible{box-shadow:inset 0 0 0 2px var(--primary-500)}
+.agent-av{width:32px;height:32px;flex:none;border-radius:9999px;display:grid;place-items:center;background:var(--accent-light);color:var(--accent-text);font-size:11px;font-weight:600}
+.agent-row.active .agent-av{background:var(--primary-500);color:#fff}
+.agent-txt{min-width:0;display:flex;flex-direction:column}
+.agent-name{font-size:13px;line-height:18px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent-row.active .agent-name{color:var(--primary-500);font-weight:600}
+.agent-prev{font-size:12px;line-height:16px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent-row .icon-btn{margin-right:4px}
+.list-empty{padding:16px;margin:0;color:var(--text-secondary);font-size:13px;line-height:18px}
+.ws.left-collapsed .agent-search,.ws.left-collapsed .agent-txt,.ws.left-collapsed .agent-row .icon-btn,.ws.left-collapsed #leftTitle,.ws.left-collapsed .list-empty{display:none}
+.ws.left-collapsed #leftPanel .panel-head{justify-content:center;padding:8px}
+.ws.left-collapsed .agent-list{padding:8px 4px}
+.ws.left-collapsed .agent-main{justify-content:center;padding:6px}
+.ws.left-collapsed .agent-row.active{box-shadow:none}
+.ws.right-collapsed #rightPanel .panel-body,.ws.right-collapsed #rightTitle,.ws.right-collapsed #rightFocus{display:none}
+.ws.right-collapsed #rightPanel .panel-head{flex-direction:column;padding:8px;border:0}
+.vlabel{display:none;writing-mode:vertical-rl;transform:rotate(180deg);margin-top:8px;font-size:10px;line-height:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted)}
+.ws.right-collapsed .vlabel{display:block}
+
+/* Center panel */
+#centerPanel{container-type:inline-size}
+.center-tabs{display:none;gap:4px;align-self:stretch;margin:-8px 0}
+.center-tabs .tab{padding:0 12px}
+.sum-scroll{padding:20px 24px}
+.state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:56px 24px;min-height:280px}
+.state h3{margin:4px 0 0;font-size:14px;line-height:20px;font-weight:600;color:var(--text-heading)}
+.state p{margin:0;max-width:440px;color:var(--text-secondary)}
+.state .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:8px}
+.ai-mark{width:40px;height:40px;border-radius:9999px;display:grid;place-items:center;background:var(--g-accent);color:#fff;flex:none}
+.ai-mark.sm{width:24px;height:24px}
+.gen-bar{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:var(--r-sm);background:var(--accent-light);color:var(--accent-text);font-size:13px;line-height:18px;font-weight:600;margin-bottom:20px}
+.gen-bar .btn{margin-left:auto}
+.spinner{width:16px;height:16px;flex:none;border-radius:9999px;border:2px solid rgba(18,128,145,.25);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sk{height:12px;border-radius:9999px;background:var(--surface-subtle-strong);margin-bottom:12px;animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+.sk.h{height:16px;width:35%;margin-bottom:16px}
+@keyframes pulse{50%{opacity:.5}}
+
+.sum-card{border:1px solid var(--primary-200);border-radius:var(--r-md);background:var(--g-surface-primary);box-shadow:var(--shadow-md);padding:16px 20px;margin-bottom:16px}
+.sum-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sum-title h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--text-heading)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 20px;margin:10px 0 0;padding:0}
+.meta div{display:flex;align-items:center;gap:6px;font-size:12px;line-height:16px;color:var(--text-muted)}
+.meta dt{font-weight:600;color:var(--text-secondary)}
+.meta dd{margin:0;color:var(--text-primary)}
+.sec{margin-bottom:20px}
+.sec h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:14px;line-height:20px;font-weight:600;color:var(--text-heading)}
+.sec ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sec li{display:flex;align-items:flex-start;gap:10px}
+.sec li .txt{padding-top:4px;font-size:13px;line-height:18px;font-weight:500;color:var(--text-primary)}
+.src{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:12px;line-height:16px;font-weight:400;color:var(--text-muted)}
+
+.actionbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:8px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:16px}
+.actionbar .grow{flex:1}
+.actionbar .vdiv{width:1px;height:20px;background:var(--border);margin:0 4px}
+@container (max-width:480px){.actionbar .lbl{display:none}.actionbar .btn{padding:0 8px}}
+.feedback{border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface-subtle);padding:16px;margin-bottom:16px}
+.feedback label{display:block;margin-bottom:6px}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.thread{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:85%;padding:8px 12px;border-radius:var(--r-md);font-size:13px;line-height:18px}
+.msg .who{display:block;font-size:10px;line-height:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px;opacity:.8}
+.msg.user{align-self:flex-end;background:var(--primary-500);color:#fff;border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:var(--surface-subtle);border:1px solid var(--border);border-bottom-left-radius:4px}
+.chat-wrap{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 24px 16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{height:28px;padding:0 10px;border:1px solid var(--primary-200);border-radius:9999px;background:var(--primary-50);color:var(--primary-500);font-size:12px;line-height:16px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.chip:hover{border-color:var(--primary-300);background:var(--primary-100)}
+.chat-form{display:flex;gap:8px}
+.chat-form .ctl{flex:1;min-width:0}
+
+/* Chart */
+#chartContent{display:flex;flex-direction:column;height:100%;min-height:320px;background:var(--surface)}
+.chart-tools{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:10px 12px 10px 16px;border-bottom:1px solid var(--border)}
+.chart-tools .grow{flex:1}
+.chart-area{flex:1;min-height:240px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.chart-result{display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+.canvas-wrap{position:relative;flex:1;min-height:220px}
+.canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.legend{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;line-height:16px;color:var(--text-secondary)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+#chartContent:fullscreen{padding:24px}
+
+/* Modal (Modal.tsx) */
+dialog{border:0;border-radius:var(--r-lg);padding:0;width:min(560px,calc(100vw - 32px));box-shadow:var(--shadow-lg);background:var(--surface);color:var(--text-primary)}
+dialog[open]{animation:panel-in 160ms cubic-bezier(.16,1,.3,1)}
+dialog::backdrop{background:rgba(30,32,36,.5)}
+@keyframes panel-in{from{opacity:0;transform:translateY(4px) scale(.98)}to{opacity:1;transform:none}}
+.dlg-head{display:flex;align-items:center;gap:8px;padding:16px 16px 16px 24px;border-bottom:1px solid var(--border)}
+.dlg-head h2{flex:1;margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--text-heading)}
+.dlg-body{padding:16px 24px}
+.dlg-body label{display:block;margin-bottom:6px}
+.dlg-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--border)}
+
+/* Responsive */
+@media (max-width:1599px){#summarizeBtn .kbd{display:none}}
+@media (max-width:1439px){.toolbar input[type=date].ctl{width:140px}.toolbar select.ctl{width:140px}.tab{padding:12px 8px}.tabstrip{gap:8px}}
+@media (max-width:1279px){
+  .ws{grid-template-columns:var(--left-w,280px) minmax(0,1fr)}
+  #rightPanel{display:none!important}
+  .center-tabs{display:flex}
+  #centerTitle{display:none}
+}
+@media (max-width:767px){
+  body{overflow:auto}
+  .content{height:auto;min-height:100vh}
+  main{padding:16px}
+  .ws,.ws.left-collapsed{grid-template-columns:minmax(0,1fr)}
+  #leftPanel{max-height:320px}
+  .tb-sep{display:none}
+  .tb-end{margin-left:0;width:100%}
+  .tb-end .btn{width:100%}
+  .toolbar .field,.toolbar input[type=date].ctl,.toolbar select.ctl,.toolbar #model{width:100%}
+}
+@media print{
+  .sidebar,.topbar,.tabstrip,.toolbar,#leftPanel,#rightPanel,.panel-head,.actionbar,.feedback,.chat-wrap,.skip,.toasts{display:none!important}
+  .content{padding:0;height:auto;display:block}
+  .card{border:0;box-shadow:none}
+  .panel-body{overflow:visible}
+  .ws,main{display:block;padding:0}
+}
+</style>
+<link rel="stylesheet" href="components/emagia-sidebar.css">
+<link rel="stylesheet" href="components/emagia-header.css">
+<link rel="stylesheet" href="components/emagia-app-launcher.css">
+<link rel="stylesheet" href="components/emagia-pickers.css">
+</head>
+<body>
+<a class="skip" href="#ws">Skip to workspace</a>
+<aside class="sidebar" id="sidebar" aria-label="Primary navigation" data-emagia-sidebar></aside>
+<script src="components/emagia-nav.config.js"></script>
+<script src="components/emagia-sidebar.js"></script>
+<div class="sb-scrim" id="sbScrim" hidden></div>
+
+<div class="content" id="content">
+  <header class="topbar" data-emagia-header data-page="workspace"></header>
+  <script src="components/emagia-header.config.js"></script>
+  <script src="components/emagia-header.js"></script>
+  <script src="components/emagia-app-launcher.config.js"></script>
+  <script src="components/emagia-app-launcher.js"></script>
+  <script src="components/emagia-datepicker.js"></script>
+
+  <main id="main">
+    <h1 class="sr-only" id="pageTitle">CFO workspace</h1>
+
+    <div class="tabstrip themed-scrollbar" role="tablist" aria-label="CFO categories" id="catTabs"></div>
+
+    <form class="toolbar card" id="toolbar" aria-label="Summary options" onsubmit="return false">
+      <div class="field"><label class="t-label" for="from">From</label><input class="ctl font-data" type="date" id="from" data-emagia-datepicker></div>
+      <div class="field"><label class="t-label" for="to">To</label><input class="ctl font-data" type="date" id="to" data-emagia-datepicker></div>
+      <div class="field"><span class="t-label" id="presetLbl">Range</span>
+        <div class="pills" role="group" aria-labelledby="presetLbl" id="presets">
+          <button class="pill" type="button" data-p="today" aria-pressed="false">Today</button>
+          <button class="pill" type="button" data-p="7" aria-pressed="false" aria-label="Last 7 days">7D</button>
+          <button class="pill" type="button" data-p="30" aria-pressed="true" aria-label="Last 30 days">30D</button>
+          <button class="pill" type="button" data-p="custom" aria-pressed="false">Custom</button>
+        </div></div>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <div class="field"><label class="t-label" for="provider">LLM Provider</label>
+        <select class="ctl" id="provider" title="Local UI setting: no model is called in this prototype"></select></div>
+      <div class="field"><label class="t-label" for="model">LLM Model</label><select class="ctl" id="model" title="Local UI setting: no model is called in this prototype"></select></div>
+      <div class="tb-end">
+        <button class="btn btn-primary" type="button" id="summarizeBtn" aria-keyshortcuts="Control+Enter" title="Summarize (Ctrl+Enter)"><span class="ic" data-i="sparkles" data-s="16"></span>Summarize<span class="kbd" aria-hidden="true">Ctrl+Enter</span></button>
+      </div>
+      <p class="date-err" id="dateErr" role="alert" hidden></p>
+      <p class="date-err" id="llmErr" role="alert" hidden></p>
+    </form>
+
+    <div class="ws" id="ws" tabindex="-1" role="tabpanel">
+      <!-- Agents -->
+      <section class="panel card" id="leftPanel" aria-labelledby="leftTitle">
+        <div class="panel-head">
+          <h2 id="leftTitle">Agents</h2>
+          <button class="icon-btn" type="button" id="leftToggle" aria-expanded="true" aria-controls="leftPanel" aria-label="Collapse agents panel" title="Collapse"><span class="ic" data-i="panel-left-close" data-s="16"></span></button>
+        </div>
+        <div class="agent-search"><div class="search-wrap"><span class="ic" data-i="search" data-s="16"></span>
+          <label class="sr-only" for="agentSearch">Search agents</label>
+          <input class="ctl" type="search" id="agentSearch" placeholder="Search agents" autocomplete="off"></div></div>
+        <div class="panel-body themed-scrollbar">
+          <p class="sr-only" id="agentHelp">Use Up and Down arrows to move between agents and Enter to choose.</p>
+          <ul class="agent-list" id="agentList" aria-label="Agents" aria-describedby="agentHelp"></ul>
+          <p class="list-empty" id="agentEmpty" role="status" hidden></p>
+        </div>
+      </section>
+
+      <!-- Summary -->
+      <section class="panel card" id="centerPanel" aria-labelledby="centerTitle">
+        <div class="panel-head">
+          <h2 id="centerTitle">Summary</h2>
+          <div class="center-tabs" role="tablist" aria-label="Summary or chart" id="centerTabs">
+            <button class="tab" role="tab" type="button" id="ctabSummary" aria-selected="true" aria-controls="sumPane">Summary</button>
+            <button class="tab" role="tab" type="button" id="ctabChart" aria-selected="false" aria-controls="chartPane" tabindex="-1">Chart</button>
+          </div>
+          <span style="flex:1"></span>
+          <button class="icon-btn" type="button" id="centerFocus" aria-pressed="false" aria-label="Focus summary panel" title="Focus (Esc to exit)"><span class="ic" data-i="maximize-2" data-s="16"></span></button>
+        </div>
+        <div class="panel-body themed-scrollbar" id="centerBody">
+          <div id="sumPane" role="tabpanel" aria-labelledby="ctabSummary">
+            <div class="sum-scroll">
+              <div class="state" id="stIdle">
+                <span class="ai-mark"><span class="ic" data-i="sparkles" data-s="18"></span></span>
+                <h3>Ready to summarize</h3>
+                <p id="idleText"></p>
+              </div>
+              <div id="stLoading" hidden aria-busy="true">
+                <div class="gen-bar" role="status"><span class="spinner" aria-hidden="true"></span><span>Generating…</span>
+                  <button class="btn btn-secondary btn-sm" type="button" id="stopBtn"><span class="ic" data-i="square" data-s="14"></span>Stop</button></div>
+                <div class="sk h"></div><div class="sk"></div><div class="sk" style="width:88%"></div><div class="sk" style="width:64%"></div>
+                <div class="sk h" style="margin-top:24px"></div><div class="sk"></div><div class="sk" style="width:76%"></div>
+                <div class="sk h" style="margin-top:24px"></div><div class="sk" style="width:92%"></div><div class="sk" style="width:58%"></div>
+              </div>
+              <div class="state" id="stError" hidden role="alert">
+                <span class="icon-badge error"><span class="ic" data-i="circle-alert" data-s="18"></span></span>
+                <h3>Summary couldn’t be generated</h3>
+                <p>[Error message from service]. Your date range and model were kept — try again.</p>
+                <div class="actions"><button class="btn btn-primary btn-sm" type="button" data-act="retry"><span class="ic" data-i="refresh-cw" data-s="14"></span>Retry</button></div>
+              </div>
+              <div class="state" id="stEmpty" hidden>
+                <span class="icon-badge warning"><span class="ic" data-i="calendar-x-2" data-s="18"></span></span>
+                <h3>No data for this range</h3>
+                <p class="emptyText"></p>
+                <div class="actions"><button class="btn btn-primary btn-sm" type="button" data-act="adjust">Adjust date range</button><button class="btn btn-secondary btn-sm" type="button" data-act="other">Try another agent</button></div>
+              </div>
+              <div id="stResult" hidden>
+                <article id="summaryDoc" aria-labelledby="sumAgent">
+                  <header class="sum-card">
+                    <div class="sum-title"><span class="ai-mark sm"><span class="ic" data-i="sparkles" data-s="13"></span></span><h2 id="sumAgent">Agent</h2><span class="ai-tag mock"><span class="ic" data-i="database" data-s="10"></span>Sample data</span></div>
+                    <dl class="meta">
+                      <div><dt>Date range</dt><dd class="font-data" id="mRange"></dd></div>
+                      <div><dt>Model</dt><dd id="mModel"></dd></div>
+                      <div><dt>Generated</dt><dd><time class="font-data" id="mTime"></time></dd></div>
+                    </dl>
+                  </header>
+                  <div id="sumSections"></div>
+                </article>
+                <div class="actionbar" role="toolbar" aria-label="Summary actions">
+                  <button class="btn btn-secondary btn-sm" type="button" data-act="regen" aria-label="Regenerate"><span class="ic" data-i="refresh-cw" data-s="14"></span><span class="lbl">Regenerate</span></button>
+                  <button class="btn btn-ghost btn-sm" type="button" data-act="edit" aria-label="Edit prompt"><span class="ic" data-i="pencil" data-s="14"></span><span class="lbl">Edit prompt</span></button>
+                  <span class="vdiv" aria-hidden="true"></span>
+                  <button class="icon-btn" type="button" data-act="copy" aria-label="Copy summary" title="Copy"><span class="ic" data-i="copy" data-s="16"></span></button>
+                  <button class="icon-btn" type="button" data-act="pdf" aria-label="Download summary as PDF" title="Download PDF"><span class="ic" data-i="download" data-s="16"></span></button>
+                  <button class="icon-btn" type="button" data-act="share" aria-label="Share summary link" title="Share"><span class="ic" data-i="share-2" data-s="16"></span></button>
+                  <button class="icon-btn" type="button" data-act="pin" aria-pressed="false" aria-label="Pin summary" title="Pin"><span class="ic" data-i="pin" data-s="16"></span></button>
+                  <span class="grow"></span>
+                  <button class="icon-btn" type="button" data-act="like" aria-pressed="false" aria-label="Helpful" title="Helpful"><span class="ic" data-i="thumbs-up" data-s="16"></span></button>
+                  <button class="icon-btn" type="button" data-act="dislike" aria-pressed="false" aria-expanded="false" aria-controls="feedback" aria-label="Not helpful" title="Not helpful"><span class="ic" data-i="thumbs-down" data-s="16"></span></button>
+                </div>
+                <form class="feedback" id="feedback" hidden onsubmit="return false">
+                  <label class="t-label" for="fbReason">What was wrong with this summary?</label>
+                  <textarea class="ctl" id="fbReason" placeholder="e.g. inaccurate, missing context, wrong period"></textarea>
+                  <div class="row-end"><button class="btn btn-secondary btn-sm" type="button" data-act="fbCancel">Cancel</button><button class="btn btn-primary btn-sm" type="button" data-act="fbSend">Send feedback</button></div>
+                </form>
+                <h3 class="sr-only">Follow-up conversation</h3>
+                <ol class="thread" id="thread" aria-live="polite"></ol>
+              </div>
+            </div>
+            <div class="chat-wrap" id="chatWrap" hidden>
+              <div class="chips" id="chips" role="group" aria-label="Suggested follow-ups"></div>
+              <form class="chat-form" id="chatForm">
+                <label class="sr-only" for="chatInput">Ask a follow-up question</label>
+                <input class="ctl" id="chatInput" placeholder="Ask a follow-up about this summary…" autocomplete="off">
+                <button class="btn btn-primary" type="submit"><span class="ic" data-i="send" data-s="14"></span>Send</button>
+              </form>
+            </div>
+          </div>
+          <div id="chartPane" role="tabpanel" aria-labelledby="ctabChart" hidden style="height:100%"></div>
+        </div>
+      </section>
+
+      <!-- Chart -->
+      <section class="panel card" id="rightPanel" aria-labelledby="rightTitle">
+        <div class="panel-head">
+          <h2 id="rightTitle">Chart</h2>
+          <button class="icon-btn" type="button" id="rightFocus" aria-pressed="false" aria-label="Focus chart panel" title="Focus (Esc to exit)"><span class="ic" data-i="maximize-2" data-s="16"></span></button>
+          <button class="icon-btn" type="button" id="rightToggle" aria-expanded="true" aria-controls="rightPanel" aria-label="Collapse chart panel" title="Collapse"><span class="ic" data-i="panel-right-close" data-s="16"></span></button>
+          <span class="vlabel" aria-hidden="true">Chart</span>
+        </div>
+        <div class="panel-body" id="rightBody">
+          <div id="chartContent">
+            <div class="chart-tools">
+              <div class="pills" role="group" aria-label="Chart type" id="chartType">
+                <button class="pill" type="button" data-t="bar" aria-pressed="true">Bar</button>
+                <button class="pill" type="button" data-t="line" aria-pressed="false">Line</button>
+                <button class="pill" type="button" data-t="pie" aria-pressed="false">Pie</button>
+              </div>
+              <span class="grow"></span>
+              <button class="icon-btn" type="button" id="dlPng" aria-label="Download chart as PNG" title="Download PNG"><span class="ic" data-i="image" data-s="16"></span></button>
+              <button class="icon-btn" type="button" id="dlCsv" aria-label="Download chart data as CSV" title="Download CSV"><span class="ic" data-i="file-spreadsheet" data-s="16"></span></button>
+              <button class="icon-btn" type="button" id="fsBtn" aria-label="Show chart fullscreen" title="Fullscreen"><span class="ic" data-i="maximize-2" data-s="16"></span></button>
+            </div>
+            <div class="chart-area">
+              <div class="state" id="chIdle"><span class="icon-badge"><span class="ic" data-i="chart-column" data-s="18"></span></span><h3>No chart yet</h3><p>The chart appears after you run <strong>Summarize</strong>.</p></div>
+              <div id="chLoading" hidden aria-busy="true"><div class="sk h"></div><div class="sk" style="height:200px;border-radius:var(--r-md)"></div></div>
+              <div class="state" id="chError" hidden><span class="icon-badge error"><span class="ic" data-i="circle-alert" data-s="18"></span></span><h3>Chart couldn’t be generated</h3><p>The summary request failed, so there is no chart data.</p><div class="actions"><button class="btn btn-primary btn-sm" type="button" data-act="retry"><span class="ic" data-i="refresh-cw" data-s="14"></span>Retry</button></div></div>
+              <div class="state" id="chEmpty" hidden><span class="icon-badge warning"><span class="ic" data-i="calendar-x-2" data-s="18"></span></span><h3>No data for this range</h3><p class="emptyText"></p><div class="actions"><button class="btn btn-primary btn-sm" type="button" data-act="adjust">Adjust date range</button><button class="btn btn-secondary btn-sm" type="button" data-act="other">Try another agent</button></div></div>
+              <div class="chart-result" id="chResult" hidden>
+                <div><span class="ai-tag mock"><span class="ic" data-i="database" data-s="10"></span><span id="chTagText">Sample data</span></span></div>
+                <div class="canvas-wrap"><canvas id="chart" role="img" aria-label="Chart"></canvas></div>
+                <ul class="legend" id="legend" hidden></ul>
+                <table class="sr-only" id="chartTable"><caption>Chart data</caption><thead><tr><th scope="col">Label</th><th scope="col">Value</th></tr></thead><tbody></tbody></table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<dialog id="promptDlg" aria-labelledby="dlgTitle">
+  <form method="dialog">
+    <div class="dlg-head"><h2 id="dlgTitle">Edit prompt</h2><button class="icon-btn" value="cancel" aria-label="Close"><span class="ic" data-i="x" data-s="16"></span></button></div>
+    <div class="dlg-body"><label class="t-label" for="promptText" id="dlgAgent">Prompt</label><textarea class="ctl" id="promptText" rows="6"></textarea></div>
+    <div class="dlg-foot"><button class="btn btn-secondary" value="cancel">Cancel</button><button class="btn btn-primary" value="save">Save &amp; regenerate</button></div>
+  </form>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="components/cfo-sample-data.js"></script>
+<script>
+/* ===== Shared shell: Lucide icons (from the app's lucide-react v0.454), mobile nav, toasts ===== */
+var ICONS={"database":"<ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M3 5V19A9 3 0 0 0 21 19V5\"/><path d=\"M3 12A9 3 0 0 0 21 12\"/>","house":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>","settings":"<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","user-round":"<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>","code-xml":"<path d=\"m18 16 4-4-4-4\"/><path d=\"m6 8-4 4 4 4\"/><path d=\"m14.5 4-5 16\"/>","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","map-pin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>","mail":"<rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"/><path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"/>","chart-column":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"M18 17V9\"/><path d=\"M13 17V5\"/><path d=\"M8 17v-3\"/>","cloud-upload":"<path d=\"M12 13v8\"/><path d=\"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242\"/><path d=\"m8 17 4-4 4 4\"/>","chart-line":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"m19 9-5 5-4-4-3 3\"/>","search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","circle-help":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","chevron-down":"<path d=\"m6 9 6 6 6-6\"/>","chevron-right":"<path d=\"m9 18 6-6-6-6\"/>","chevron-left":"<path d=\"m15 18-6-6 6-6\"/>","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>","hand-coins":"<path d=\"M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17\"/><path d=\"m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9\"/><path d=\"m2 16 6 6\"/><circle cx=\"16\" cy=\"9\" r=\"2.9\"/><circle cx=\"6\" cy=\"5\" r=\"3\"/>","receipt-text":"<path d=\"M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z\"/><path d=\"M14 8H8\"/><path d=\"M16 12H8\"/><path d=\"M13 16H8\"/>","banknote":"<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>","message-square-warning":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M12 7v2\"/><path d=\"M12 13h.01\"/>","monitor-smartphone":"<path d=\"M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8\"/><path d=\"M10 19v-3.96 3.15\"/><path d=\"M7 19h5\"/><rect width=\"6\" height=\"10\" x=\"16\" y=\"12\" rx=\"2\"/>","gauge":"<path d=\"m12 14 4-4\"/><path d=\"M3.34 19a10 10 0 1 1 17.32 0\"/>","target":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>","sparkles":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/>","sparkle":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/>","refresh-cw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","share-2":"<circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><line x1=\"8.59\" x2=\"15.42\" y1=\"13.51\" y2=\"17.49\"/><line x1=\"15.41\" x2=\"8.59\" y1=\"6.51\" y2=\"10.49\"/>","pin":"<path d=\"M12 17v5\"/><path d=\"M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z\"/>","thumbs-up":"<path d=\"M7 10v12\"/><path d=\"M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z\"/>","thumbs-down":"<path d=\"M17 14V2\"/><path d=\"M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z\"/>","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","maximize-2":"<polyline points=\"15 3 21 3 21 9\"/><polyline points=\"9 21 3 21 3 15\"/><line x1=\"21\" x2=\"14\" y1=\"3\" y2=\"10\"/><line x1=\"3\" x2=\"10\" y1=\"21\" y2=\"14\"/>","minimize-2":"<polyline points=\"4 14 10 14 10 20\"/><polyline points=\"20 10 14 10 14 4\"/><line x1=\"14\" x2=\"21\" y1=\"10\" y2=\"3\"/><line x1=\"3\" x2=\"10\" y1=\"21\" y2=\"14\"/>","panel-left-close":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/><path d=\"m16 15-3-3 3-3\"/>","panel-left-open":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/><path d=\"m14 9 3 3-3 3\"/>","panel-right-close":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M15 3v18\"/><path d=\"m8 9 3 3-3 3\"/>","panel-right-open":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M15 3v18\"/><path d=\"m10 15-3-3 3-3\"/>","image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","file-spreadsheet":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M8 13h2\"/><path d=\"M14 13h2\"/><path d=\"M8 17h2\"/><path d=\"M14 17h2\"/>","circle-alert":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\"/>","calendar-x-2":"<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><path d=\"M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8\"/><path d=\"M3 10h18\"/><path d=\"m17 22 5-5\"/><path d=\"m17 17 5 5\"/>","send":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>","bot":"<path d=\"M12 8V4H8\"/><rect width=\"16\" height=\"12\" x=\"4\" y=\"8\" rx=\"2\"/><path d=\"M2 14h2\"/><path d=\"M20 14h2\"/><path d=\"M15 13v2\"/><path d=\"M9 13v2\"/>","x":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","chart-pie":"<path d=\"M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z\"/><path d=\"M21.21 15.89A10 10 0 1 1 8 2.83\"/>","info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","lightbulb":"<path d=\"M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5\"/><path d=\"M9 18h6\"/><path d=\"M10 22h4\"/>","triangle-alert":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/>","circle-check":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/>","menu":"<line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/><line x1=\"4\" x2=\"20\" y1=\"6\" y2=\"6\"/><line x1=\"4\" x2=\"20\" y1=\"18\" y2=\"18\"/>","briefcase-business":"<path d=\"M12 12h.01\"/><path d=\"M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2\"/><path d=\"M22 13a18.15 18.15 0 0 1-20 0\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\"/>"};
+function ic(name,size,cls){
+  var s=size||16;
+  return '<span class="ic'+(cls?' '+cls:'')+'" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[name]||'')+'</svg></span>';
+}
+function hydrateIcons(root){
+  [].forEach.call((root||document).querySelectorAll('span.ic[data-i]'),function(el){
+    var s=el.getAttribute('data-s')||16;
+    el.setAttribute('aria-hidden','true');
+    el.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[el.getAttribute('data-i')]||'')+'</svg>';
+    el.removeAttribute('data-i');
+  });
+}
+hydrateIcons();
+(function(){
+  var btn=document.getElementById('menuBtn'),scrim=document.getElementById('sbScrim');
+  function set(open){document.body.classList.toggle('nav-open',open);scrim.hidden=!open;btn.setAttribute('aria-expanded',String(open))}
+  btn.addEventListener('click',function(){set(!document.body.classList.contains('nav-open'))});
+  scrim.addEventListener('click',function(){set(false)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('nav-open')){set(false);btn.focus()}});
+})();
+var TOAST_ICON={info:'info',success:'circle-check',error:'circle-alert'};
+function toast(msg,tone){
+  tone=tone||'info';
+  var host=document.getElementById('toasts');
+  var t=document.createElement('div');
+  t.className='toast '+tone;t.setAttribute('role','status');
+  t.innerHTML=ic(TOAST_ICON[tone],16)+'<span></span><button type="button" aria-label="Dismiss notification">'+ic('x',14)+'</button>';
+  t.querySelector('span:not(.ic)').textContent=msg;
+  function dismiss(){t.classList.add('leaving');setTimeout(function(){t.remove()},120)}
+  t.querySelector('button').addEventListener('click',dismiss);
+  host.appendChild(t);
+  setTimeout(dismiss,3880);
+}
+
+
+(function(){
+  'use strict';
+  var $=function(id){return document.getElementById(id)};
+  var CATS=[
+    {id:'credit',name:'Credit',icon:'shield-check'},
+    {id:'collections',name:'Collections',icon:'hand-coins'},
+    {id:'receivables',name:'Receivables',icon:'receipt-text'},
+    {id:'cash-app',name:'Cash App',icon:'banknote'},
+    {id:'disputes',name:'Disputes',icon:'message-square-warning'},
+    {id:'portal-usage',name:'Portal Usage (EIPP)',icon:'monitor-smartphone'},
+    {id:'efficiency',name:'Efficiency & Benchmarking',icon:'gauge'},
+    {id:'kpis',name:'KPIs',icon:'target'}
+  ];
+  /* LLM selection — local UI configuration only (approved lists, 2026-11-16). No model is called in this prototype:
+     summaries and chat use CFO_SAMPLE. A future server-side gateway would receive these ids; keys never live in the browser.
+     Every approved model id is an Ollama model ('ollama/' prefix); no OpenAI models are approved, so OpenAI + any listed
+     model is reported as unsupported instead of being mapped to another model. Default: Ollama + the first model. */
+  var LLM={
+    providers:['OpenAI','Ollama'],
+    models:['ollama/gpt-oss:latest','ollama/gemma3:latest','ollama/llama3.2:latest','ollama/deepseek-r1:latest','ollama/qwen2.5-coder:latest'],
+    defaults:{provider:'Ollama',model:'ollama/gpt-oss:latest'},
+    supports:function(p,m){return p==='Ollama'&&m.indexOf('ollama/')===0}
+  };
+  // Agent catalog comes from the sample data layer (CFO_SAMPLE.listAgents) — 4 agents per category.
+  var AGENTS={};
+  CATS.forEach(function(c){AGENTS[c.id]=CFO_SAMPLE.listAgents(c.id)});
+  var params=new URLSearchParams(location.search);
+  var DEMO=params.get('demo'); // 'error' | 'empty' — preview states
+  var LS='erms.cfo.ws.panels';
+  var st={cat:null,agentIdx:{},status:'idle',chartType:'bar',narrow:false,centerTab:'summary',timer:null,panels:{left:false,right:false,focus:null}};
+  var cache={},threads={},chatCtx={},pending={}; // chatCtx: follow-up context per agent; pending: reply in progress per agent
+  try{var p=JSON.parse(localStorage.getItem(LS)||'null');if(p)st.panels=Object.assign(st.panels,p)}catch(e){}
+  try{var ct=localStorage.getItem('erms.cfo.chartType');if(ct)st.chartType=ct}catch(e){}
+  function save(){try{localStorage.setItem(LS,JSON.stringify(st.panels))}catch(e){}}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function initials(n){var w=n.replace(/[\[\]()&]/g,'').trim().split(/\s+/);return((w[0]||'')[0]+(w[w.length-1]||'')[0]).toUpperCase()}
+  function cat(){return CATS.filter(function(c){return c.id===st.cat})[0]}
+  function agent(){return AGENTS[st.cat][st.agentIdx[st.cat]||0]}
+  function key(){return st.cat+'|'+agent().id}
+  function q(sel){return document.querySelector(sel)}
+
+  /* Category tabs */
+  var tabs=$('catTabs');
+  tabs.innerHTML=CATS.map(function(c){return '<button class="tab" type="button" role="tab" id="tab-'+c.id+'" data-cat="'+c.id+'" aria-controls="ws" aria-selected="false" tabindex="-1">'+ic(c.icon,14)+esc(c.name)+'</button>'}).join('');
+  tabs.addEventListener('click',function(e){var b=e.target.closest('.tab');if(b)setCategory(b.dataset.cat,true)});
+  tabs.addEventListener('keydown',function(e){
+    var all=[].slice.call(tabs.querySelectorAll('.tab')),i=all.indexOf(document.activeElement);if(i<0)return;
+    var n=null;
+    if(e.key==='ArrowRight')n=(i+1)%all.length;else if(e.key==='ArrowLeft')n=(i-1+all.length)%all.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=all.length-1;
+    if(n!==null){e.preventDefault();all.forEach(function(t){t.tabIndex=-1});all[n].tabIndex=0;all[n].focus()}
+  });
+  function setCategory(id,push){
+    if(!AGENTS[id])id='credit';
+    if(st.status==='loading')stop(true);
+    st.cat=id;
+    [].forEach.call(tabs.querySelectorAll('.tab'),function(t){var on=t.dataset.cat===id;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1});
+    var c=cat();
+    $('crumbCat').textContent=c.name;
+    $('ws').setAttribute('aria-labelledby','tab-'+id);
+    $('pageTitle').textContent='CFO '+c.name+' workspace';
+    document.title='CFO · '+c.name+' · ERMS Admin';
+    var at=$('tab-'+id);if(at&&at.scrollIntoView)at.scrollIntoView({block:'nearest',inline:'nearest'});
+    if(push){var u=new URL(location.href);u.searchParams.set('category',id);u.searchParams.delete('agent');history.pushState({category:id},'',u)}
+    $('agentSearch').value='';
+    renderAgents();restore();
+  }
+  window.addEventListener('popstate',function(){setCategory(new URLSearchParams(location.search).get('category')||'credit',false)});
+
+  /* Agents */
+  var list=$('agentList');
+  function renderAgents(){
+    var qv=$('agentSearch').value.trim().toLowerCase(),act=st.agentIdx[st.cat]||0,html='',shown=0;
+    AGENTS[st.cat].forEach(function(a,i){
+      if(qv&&(a.name+' '+a.description+' '+a.prompt).toLowerCase().indexOf(qv)<0)return;
+      shown++;var on=i===act;
+      html+='<li class="agent-row'+(on?' active':'')+'">'+
+        '<button type="button" class="agent-main" data-i="'+i+'" tabindex="-1"'+(on?' aria-current="true"':'')+' aria-label="'+esc(a.name+'. '+a.description)+(on?', selected':'')+'" title="'+esc(a.name+' — '+a.description)+'">'+
+        '<span class="agent-av" aria-hidden="true">'+initials(a.name)+'</span>'+
+        '<span class="agent-txt" aria-hidden="true"><span class="agent-name">'+esc(a.name)+'</span><span class="agent-prev">'+esc(a.description)+'</span></span></button>'+
+        '<button type="button" class="icon-btn" data-refresh="'+i+'" aria-label="Refresh summary for '+esc(a.name)+'" title="Refresh">'+ic('refresh-cw',14)+'</button></li>';
+    });
+    list.innerHTML=html;
+    var em=$('agentEmpty');em.hidden=shown>0;if(!shown)em.textContent='No agents match “'+$('agentSearch').value+'”.';
+    var cur=list.querySelector('.agent-main[aria-current]')||list.querySelector('.agent-main');if(cur)cur.tabIndex=0;
+  }
+  $('agentSearch').addEventListener('input',renderAgents);
+  $('agentSearch').addEventListener('keydown',function(e){if(e.key==='ArrowDown'){var f=list.querySelector('.agent-main');if(f){e.preventDefault();f.focus()}}});
+  list.addEventListener('click',function(e){
+    var r=e.target.closest('[data-refresh]');if(r){selectAgent(+r.dataset.refresh,false);summarize();return}
+    var b=e.target.closest('.agent-main');if(b)selectAgent(+b.dataset.i,true);
+  });
+  list.addEventListener('keydown',function(e){
+    var m=[].slice.call(list.querySelectorAll('.agent-main')),i=m.indexOf(document.activeElement);if(i<0)return;
+    var n=null;
+    if(e.key==='ArrowDown')n=Math.min(i+1,m.length-1);
+    else if(e.key==='ArrowUp'){if(i===0&&!$('ws').classList.contains('left-collapsed')){e.preventDefault();$('agentSearch').focus();return}n=Math.max(i-1,0)}
+    else if(e.key==='Home')n=0;else if(e.key==='End')n=m.length-1;
+    if(n!==null){e.preventDefault();m.forEach(function(x){x.tabIndex=-1});m[n].tabIndex=0;m[n].focus()}
+  });
+  function selectAgent(i,keepFocus){
+    var same=i===(st.agentIdx[st.cat]||0);
+    if(same&&(cache[key()]||st.status==='loading')){if(keepFocus){var a=list.querySelector('.agent-main[data-i="'+i+'"]');if(a)a.focus()}return}
+    if(st.status==='loading')stop(true);
+    st.agentIdx[st.cat]=i;renderAgents();
+    if(keepFocus){var b=list.querySelector('.agent-main[data-i="'+i+'"]');if(b)b.focus()}
+    restore();
+    try{document.dispatchEvent(new CustomEvent('cfo:agentopen',{detail:{category:st.cat,agentId:agent().id}}))}catch(e){} // header Global Search: Recent
+    if(!cache[key()])summarize();
+  }
+
+  /* Toolbar */
+  function iso(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+  function pressPreset(p){[].forEach.call($('presets').children,function(b){b.setAttribute('aria-pressed',String(b.dataset.p===p))})}
+  function setPreset(p){
+    pressPreset(p);
+    if(p==='custom'){$('from').focus();return}
+    var t=new Date(),f=new Date();if(p!=='today')f.setDate(t.getDate()-(+p-1));
+    $('from').value=iso(f);$('to').value=iso(t);validDates();
+  }
+  $('presets').addEventListener('click',function(e){var b=e.target.closest('button');if(b)setPreset(b.dataset.p)});
+  ['from','to'].forEach(function(id){$(id).addEventListener('change',function(){pressPreset('custom');validDates()})});
+  function validDates(){
+    var f=$('from').value,t=$('to').value,msg='';
+    if(!f||!t)msg='Select both a From and a To date.';else if(f>t)msg='“From” date must be on or before the “To” date.';
+    $('dateErr').textContent=msg;$('dateErr').hidden=!msg;
+    ['from','to'].forEach(function(id){$(id).setAttribute('aria-invalid',String(!!msg));if(msg)$(id).setAttribute('aria-describedby','dateErr');else $(id).removeAttribute('aria-describedby')});
+    return !msg;
+  }
+  function fillModels(){
+    function opts(list){return list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>'}).join('')}
+    $('provider').innerHTML=opts(LLM.providers);$('model').innerHTML=opts(LLM.models);
+    $('provider').value=LLM.defaults.provider;$('model').value=LLM.defaults.model;validLlm();
+  }
+  // Provider and model are independent selections (neither changes the other); an unsupported pair is explained, never hidden.
+  function validLlm(){
+    var p=$('provider').value,m=$('model').value,ok=LLM.supports(p,m);
+    $('llmErr').textContent=ok?'':p+' can’t run '+m+': the approved models are Ollama models and no '+p+' models are configured. Select Ollama to use them. No model is called in this prototype — summaries use local sample data.';
+    $('llmErr').hidden=ok;
+    ['provider','model'].forEach(function(id){$(id).setAttribute('aria-invalid',String(!ok));if(ok)$(id).removeAttribute('aria-describedby');else $(id).setAttribute('aria-describedby','llmErr')});
+    return ok;
+  }
+  $('provider').addEventListener('change',validLlm);$('model').addEventListener('change',validLlm);
+  function fmtDate(v){if(!v)return '—';return new Date(v+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'})}
+
+  /* Summary states */
+  var MAP={idle:'Idle',loading:'Loading',error:'Error',empty:'Empty',success:'Result'};
+  function show(s){
+    st.status=s;
+    ['Idle','Loading','Error','Empty','Result'].forEach(function(n){$('st'+n).hidden=MAP[s]!==n;var c=$('ch'+n);if(c)c.hidden=MAP[s]!==n});
+    $('chartContent').setAttribute('aria-busy',String(s==='loading'));
+    $('chatWrap').hidden=s!=='success';
+    $('summarizeBtn').disabled=s==='loading';
+    if(s==='success')setTimeout(drawChart,0);
+  }
+  function restore(){
+    $('idleText').innerHTML='Select an agent to generate its summary, or change the date range or model and press <strong>Summarize</strong> (Ctrl+Enter).';
+    var c=cache[key()];if(c){renderResult(c);show(c.status)}else show('idle');
+    $('feedback').hidden=true;renderThread();
+  }
+  function summarize(){
+    if(!validDates()){$('from').focus();return}
+    if(st.status==='loading')return;
+    var req={agent:agent(),agentKey:key(),from:$('from').value,to:$('to').value,provider:$('provider').value,model:$('model').value};
+    show('loading');$('feedback').hidden=true;
+    if(st.narrow&&st.centerTab!=='summary')setCenterTab('summary');
+    if(DEMO==='loading')return; // preview: stay in the loading state
+    // Data comes from the local sample layer; replace CFO_SAMPLE.getSummary with the real API later.
+    var token={};st.timer=token;
+    CFO_SAMPLE.getSummary({categoryId:st.cat,agentId:req.agent.id,from:req.from,to:req.to,provider:req.provider,model:req.model,prompt:req.agent.prompt})
+      .then(function(data){return{status:DEMO==='error'?'error':DEMO==='empty'?'empty':'success',data:data}},function(){return{status:'error',data:null}})
+      .then(function(out){
+        if(st.timer!==token)return; // stopped or superseded
+        st.timer=null;
+        var res=Object.assign({status:out.status,time:new Date(),data:out.data},req);
+        cache[req.agentKey]=res;
+        if(req.agentKey!==key())return;
+        renderResult(res);show(res.status);
+        if(res.status==='success')toast('Summary ready','success');else if(res.status==='error')toast('Summary failed','error');else toast('No data for this range');
+      });
+  }
+  function stop(silent){
+    st.timer=null; // the pending sample response is ignored when it arrives
+    var c=cache[key()];if(c){renderResult(c);show(c.status)}else show('idle');
+    if(!silent)toast('Generation stopped');
+  }
+  $('stopBtn').addEventListener('click',function(){stop(false);$('summarizeBtn').focus()});
+  $('summarizeBtn').addEventListener('click',summarize);
+
+  var SECTIONS=[
+    {key:'insights',title:'Key Insights',icon:'lightbulb',tone:'info'},
+    {key:'risks',title:'Risks',icon:'triangle-alert',tone:'warning'},
+    {key:'recommendations',title:'Recommendations',icon:'circle-check',tone:'success'}
+  ];
+  function renderResult(r){
+    $('sumAgent').textContent=r.agent.name;
+    $('mRange').textContent=fmtDate(r.from)+' – '+fmtDate(r.to);
+    $('mModel').textContent='Not called — local sample data';
+    $('mTime').textContent=r.time.toLocaleString('en-US',{month:'short',day:'2-digit',hour:'numeric',minute:'2-digit'});
+    $('mTime').setAttribute('datetime',r.time.toISOString());
+    [].forEach.call(document.querySelectorAll('.emptyText'),function(p,i){
+      p.textContent='No records were found for '+r.agent.name+' between '+fmtDate(r.from)+' and '+fmtDate(r.to)+', so there is nothing to '+(i===0?'summarize':'chart')+'.';
+    });
+    var data=r.data||{sections:[]};
+    $('sumSections').innerHTML=SECTIONS.map(function(s,si){
+      var sec=data.sections.filter(function(x){return x.key===s.key})[0]||{items:[]};
+      var items=sec.items.map(function(it){
+        var src=it.source||{};
+        return '<li><span class="icon-badge sm '+s.tone+'">'+ic(s.icon,14)+'</span><div class="txt"><strong>'+esc(it.title)+'.</strong> '+esc(it.metric)+': <span class="font-data">'+esc(it.value)+'</span>. '+esc(it.impact)+'.'+
+          '<div class="src">'+ic('link',12)+'Source: <a href="#" data-src="'+esc(src.id||'')+'">'+esc(src.report||'Sample data')+'</a> · '+esc(src.id||'')+(src.record?' · '+esc(src.record):'')+' · period ending '+esc(fmtDate(r.to))+'</div></div></li>';
+      }).join('');
+      return '<section class="sec" aria-labelledby="sec'+si+'"><h3 id="sec'+si+'">'+s.title+'</h3><ul>'+items+'</ul></section>';
+    }).join('');
+    q('[data-act="pin"]').setAttribute('aria-pressed',String(!!r.pinned));
+    syncVote(r);q('[data-act="dislike"]').setAttribute('aria-expanded','false');
+    renderChips();
+  }
+
+  /* Actions */
+  function syncVote(r){r=r||cache[key()]||{};q('[data-act="like"]').setAttribute('aria-pressed',String(r.vote==='up'));q('[data-act="dislike"]').setAttribute('aria-pressed',String(r.vote==='down'))}
+  function closeFeedback(focus){$('feedback').hidden=true;q('[data-act="dislike"]').setAttribute('aria-expanded','false');if(focus)q('[data-act="dislike"]').focus()}
+  document.addEventListener('click',function(e){
+    var sl=e.target.closest('a[data-src]');
+    if(sl){e.preventDefault();toast('Sample reference '+sl.dataset.src+' — the report viewer isn’t connected in this prototype');return}
+    var b=e.target.closest('[data-act]');if(!b)return;
+    var r=cache[key()];
+    switch(b.dataset.act){
+      case 'retry':case 'regen':summarize();break;
+      case 'adjust':pressPreset('custom');$('from').focus();break;
+      case 'other':
+        if(st.panels.focus)setFocus(null);
+        if(st.panels.left)setLeft(false);
+        var nx=list.querySelector('.agent-row:not(.active) .agent-main')||list.querySelector('.agent-main');if(nx){nx.tabIndex=0;nx.focus()}break;
+      case 'copy':copy($('summaryDoc').innerText,'Summary copied');break;
+      case 'pdf':window.print();break;
+      case 'share':var u=new URL(location.href);u.searchParams.set('category',st.cat);u.searchParams.set('agent',agent().id);copy(u.toString(),'Share link copied');break;
+      case 'pin':if(r){r.pinned=!r.pinned;b.setAttribute('aria-pressed',String(r.pinned));toast(r.pinned?'Summary pinned':'Summary unpinned','success')}break;
+      case 'like':if(r){r.vote=r.vote==='up'?null:'up';syncVote(r);closeFeedback(false);if(r.vote)toast('Thanks for the feedback','success')}break;
+      case 'dislike':
+        if(!r)break;
+        if(r.vote==='down'&&$('feedback').hidden){r.vote=null;syncVote(r);break}
+        r.vote='down';syncVote(r);$('feedback').hidden=false;b.setAttribute('aria-expanded','true');$('fbReason').focus();break;
+      case 'fbCancel':closeFeedback(true);break;
+      case 'fbSend':$('fbReason').value='';closeFeedback(true);toast('Feedback sent','success');break;
+      case 'edit':$('dlgAgent').textContent='Prompt for '+agent().name;$('promptText').value=agent().prompt;$('promptDlg').showModal();$('promptText').focus();break;
+    }
+  });
+  function copy(text,msg){
+    function fb(){var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();try{document.execCommand('copy');toast(msg,'success')}catch(x){toast('Copy failed','error')}t.remove()}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){toast(msg,'success')},fb);else fb();
+  }
+  $('promptDlg').addEventListener('close',function(){
+    if($('promptDlg').returnValue==='save'){var v=$('promptText').value.trim();if(v){agent().prompt=v;renderAgents();toast('Prompt saved. Sample summaries don’t change with the prompt until a model is connected.');summarize()}}
+    var eb=q('[data-act="edit"]');if(eb&&!eb.closest('[hidden]'))eb.focus();
+  });
+
+  /* Chat */
+  // Suggested questions are per agent (from the sample catalog). Replies come from CFO_SAMPLE.answer —
+  // deterministic local responses, no model call. Threads and follow-up context are kept per agent.
+  function renderChips(){$('chips').innerHTML=agent().chips.map(function(c){return '<button type="button" class="chip">'+ic('sparkle',10)+esc(c)+'</button>'}).join('')}
+  $('chips').addEventListener('click',function(e){var c=e.target.closest('.chip');if(c)send(c.textContent.trim())});
+  $('chatForm').addEventListener('submit',function(e){e.preventDefault();var v=$('chatInput').value.trim();if(v&&!pending[key()]){send(v);$('chatInput').value=''}});
+  function send(text){
+    var k=key(),a=agent();if(!text||pending[k])return; // no empty or duplicate submissions while a reply is in progress
+    (threads[k]=threads[k]||[]).push({role:'user',text:text});pending[k]=true;renderThread();
+    CFO_SAMPLE.answer({categoryId:st.cat,agentId:a.id,question:text,context:chatCtx[k],periodEnd:$('to').value})
+      .then(function(r){chatCtx[k]=r.context;return r.text},function(){return 'A sample response couldn’t be prepared for this question.'})
+      .then(function(t){threads[k].push({role:'ai',text:t});pending[k]=false;if(k===key())renderThread()});
+  }
+  function renderThread(){
+    var t=threads[key()]||[],busy=!!pending[key()];
+    $('thread').innerHTML=t.map(function(m){return '<li class="msg '+m.role+'"><span class="who">'+(m.role==='user'?'You':'Assistant · sample response')+'</span>'+esc(m.text)+'</li>'}).join('')+
+      (busy?'<li class="msg ai" aria-busy="true"><span class="who">Assistant · sample response</span>Preparing a response from the sample data…</li>':'');
+    $('chatForm').querySelector('button[type="submit"]').disabled=busy;
+    var last=$('thread').lastElementChild;if(last&&last.scrollIntoView)last.scrollIntoView({block:'nearest'});
+  }
+
+  /* Chart */
+  // The chart uses the same sample dataset as the summary (result.data.chart from CFO_SAMPLE.getSummary).
+  function chartData(){var c=cache[key()];return c&&c.data&&c.data.chart}
+  var fmtVal=CFO_SAMPLE.format;
+  function fmtTick(v,unit){v=+v.toFixed(4);if(unit==='usdM')return '$'+v+'M';if(unit==='usdK')return '$'+v+'K';if(unit==='pct')return v+'%';return v.toLocaleString('en-US')}
+  function niceTop(max){var raw=(max||1)/4,ex=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/ex,n=f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10;return n*ex*4}
+  var css=getComputedStyle(document.documentElement);
+  function tok(n){return css.getPropertyValue(n).trim()}
+  var PIE=[tok('--primary-500'),tok('--chart-4'),tok('--chart-3'),tok('--chart-2'),tok('--chart-1')];
+  function syncChartType(){[].forEach.call($('chartType').children,function(b){b.setAttribute('aria-pressed',String(b.dataset.t===st.chartType))})}
+  $('chartType').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;st.chartType=b.dataset.t;try{localStorage.setItem('erms.cfo.chartType',st.chartType)}catch(x){}syncChartType();drawChart()});
+  function drawChart(){
+    if(st.status!=='success')return;
+    var D=chartData();if(!D)return;
+    $('chTagText').textContent='Sample data · '+D.title;
+    var cv=$('chart'),w=cv.parentElement.clientWidth,h=cv.parentElement.clientHeight;if(!w||!h)return;
+    var dpr=window.devicePixelRatio||1;cv.width=w*dpr;cv.height=h*dpr;
+    var g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);g.fillStyle='#FFFFFF';g.fillRect(0,0,w,h);
+    g.font='500 12px Inter, "Segoe UI", system-ui, sans-serif';
+    var L=D.labels,V=D.values,max=Math.max.apply(null,V),top=niceTop(max);
+    var muted=tok('--text-muted'),grid=tok('--gray-200'),axis=tok('--gray-300'),pri=tok('--primary-500');
+    $('legend').hidden=st.chartType!=='pie';
+    if(st.chartType==='pie'){
+      var tot=V.reduce(function(a,b){return a+b},0),r=Math.max(10,Math.min(w,h)/2-12),cx=w/2,cy=h/2,a0=-Math.PI/2;
+      V.forEach(function(v,i){var a1=a0+v/tot*Math.PI*2;g.beginPath();g.moveTo(cx,cy);g.arc(cx,cy,r,a0,a1);g.closePath();g.fillStyle=PIE[i%PIE.length];g.fill();g.strokeStyle='#FFFFFF';g.lineWidth=2;g.stroke();a0=a1});
+      g.beginPath();g.arc(cx,cy,r*.55,0,Math.PI*2);g.fillStyle='#FFFFFF';g.fill();
+      $('legend').innerHTML=L.map(function(l,i){return '<li><i style="background:'+PIE[i%PIE.length]+'"></i>'+esc(l)+' · <span class="font-data">'+Math.round(V[i]/tot*100)+'%</span></li>'}).join('');
+    }else{
+      var pl=Math.max(36,Math.ceil(g.measureText(fmtTick(top,D.unit)).width)+14),pr=8,pt=8,pb=28,cw=w-pl-pr,ch=h-pt-pb;
+      g.textAlign='right';g.textBaseline='middle';
+      for(var k=0;k<=4;k++){var y=Math.round(pt+ch-ch*k/4)+.5;g.strokeStyle=k?grid:axis;g.lineWidth=1;g.beginPath();g.moveTo(pl,y);g.lineTo(w-pr,y);g.stroke();g.fillStyle=muted;g.fillText(fmtTick(top*k/4,D.unit),pl-8,y)}
+      var step=cw/L.length;g.textAlign='center';g.textBaseline='top';
+      L.forEach(function(l,i){var t=l;while(g.measureText(t).width>step-4&&t.length>3)t=t.slice(0,-2)+'…';g.fillStyle=muted;g.fillText(t,pl+step*i+step/2,pt+ch+8)});
+      if(st.chartType==='bar'){
+        var bw=Math.min(40,step*.56);
+        V.forEach(function(v,i){var bh=ch*v/top,x=pl+step*i+(step-bw)/2,y=pt+ch-bh;g.fillStyle=pri;g.beginPath();if(g.roundRect)g.roundRect(x,y,bw,bh,[6,6,0,0]);else g.rect(x,y,bw,bh);g.fill()});
+      }else{
+        g.beginPath();V.forEach(function(v,i){var x=pl+step*i+step/2,y=pt+ch-ch*v/top;i?g.lineTo(x,y):g.moveTo(x,y)});
+        g.strokeStyle=pri;g.lineWidth=2;g.lineJoin='round';g.stroke();
+        V.forEach(function(v,i){var x=pl+step*i+step/2,y=pt+ch-ch*v/top;g.beginPath();g.arc(x,y,4,0,Math.PI*2);g.fillStyle='#FFFFFF';g.fill();g.strokeStyle=pri;g.lineWidth=2;g.stroke()});
+      }
+    }
+    cv.setAttribute('aria-label',st.chartType+' chart of sample data, '+D.title+': '+L.map(function(l,i){return l+' '+fmtVal(V[i],D.unit)}).join(', '));
+    $('chartTable').caption.textContent=D.title+' (sample data)';
+    $('chartTable').tBodies[0].innerHTML=L.map(function(l,i){return '<tr><td>'+esc(l)+'</td><td>'+esc(fmtVal(V[i],D.unit))+'</td></tr>'}).join('');
+  }
+  function dl(name,href){var a=document.createElement('a');a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+  function base(){return 'cfo-'+st.cat+'-'+agent().id+'-'+$('from').value+'_'+$('to').value}
+  $('dlPng').addEventListener('click',function(){if(st.status!=='success'){toast('Run Summarize to create a chart first');return}dl(base()+'.png',$('chart').toDataURL('image/png'))});
+  $('dlCsv').addEventListener('click',function(){
+    if(st.status!=='success'){toast('Run Summarize to create a chart first');return}
+    var D=chartData();if(!D){toast('Run Summarize to create a chart first');return}
+    var UNIT={usdM:'USD millions',usdK:'USD thousands',pct:'Percent',days:'Days',count:'Count'};
+    function cell(s){return '"'+String(s).replace(/"/g,'""')+'"'}
+    var csv=[cell(D.title)+',Value,Unit,Origin'].concat(D.labels.map(function(l,i){return cell(l)+','+D.values[i]+','+cell(UNIT[D.unit]||D.unit)+',"Sample data (illustrative)"'})).join('\n');
+    var u=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));dl(base()+'.csv',u);setTimeout(function(){URL.revokeObjectURL(u)},1000);
+  });
+  $('fsBtn').addEventListener('click',function(){var el=$('chartContent');if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen()});
+  document.addEventListener('fullscreenchange',function(){var on=!!document.fullscreenElement;$('fsBtn').setAttribute('aria-label',on?'Exit fullscreen':'Show chart fullscreen');$('fsBtn').innerHTML=ic(on?'minimize-2':'maximize-2',16);setTimeout(drawChart,50)});
+  if(window.ResizeObserver)new ResizeObserver(function(){drawChart()}).observe(q('.canvas-wrap'));else window.addEventListener('resize',drawChart);
+
+  /* Panels */
+  var ws=$('ws');
+  function setLeft(c){st.panels.left=c;ws.classList.toggle('left-collapsed',c);var t=$('leftToggle');t.setAttribute('aria-expanded',String(!c));t.setAttribute('aria-label',c?'Expand agents panel':'Collapse agents panel');t.title=c?'Expand':'Collapse';t.innerHTML=ic(c?'panel-left-open':'panel-left-close',16);save();setTimeout(drawChart,0)}
+  function setRight(c){st.panels.right=c;ws.classList.toggle('right-collapsed',c);var t=$('rightToggle');t.setAttribute('aria-expanded',String(!c));t.setAttribute('aria-label',c?'Expand chart panel':'Collapse chart panel');t.title=c?'Expand':'Collapse';t.innerHTML=ic(c?'panel-right-open':'panel-right-close',16);save();setTimeout(drawChart,0)}
+  function setFocus(which){
+    if(which==='right'&&st.narrow)which='center';
+    st.panels.focus=which;save();
+    ws.classList.toggle('has-focus',!!which);
+    [['center','centerPanel'],['right','rightPanel'],['left','leftPanel']].forEach(function(p){$(p[1]).classList.toggle('is-focused',p[0]===which)});
+    [['center','centerFocus','summary'],['right','rightFocus','chart']].forEach(function(p){
+      var b=$(p[1]),on=which===p[0];b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'Exit focus mode (Esc)':'Focus '+p[2]+' panel');b.innerHTML=ic(on?'minimize-2':'maximize-2',16);
+    });
+    if(which==='right'&&st.panels.right)setRight(false);
+    setTimeout(drawChart,0);
+  }
+  $('leftToggle').addEventListener('click',function(){setLeft(!st.panels.left)});
+  $('rightToggle').addEventListener('click',function(){setRight(!st.panels.right);$('rightToggle').focus()});
+  $('centerFocus').addEventListener('click',function(){setFocus(st.panels.focus==='center'?null:'center')});
+  $('rightFocus').addEventListener('click',function(){setFocus(st.panels.focus==='right'?null:'right')});
+
+  /* < 1280px: chart moves into a Summary | Chart tab */
+  var mq=window.matchMedia('(max-width:1279px)');
+  function applyNarrow(){
+    st.narrow=mq.matches;var cc=$('chartContent');
+    if(st.narrow){$('chartPane').appendChild(cc);if(st.panels.focus==='right')setFocus('center')}
+    else{$('rightBody').appendChild(cc);setCenterTab('summary')}
+    setTimeout(drawChart,0);
+  }
+  function setCenterTab(t){
+    st.centerTab=t;
+    $('ctabSummary').setAttribute('aria-selected',String(t==='summary'));$('ctabSummary').tabIndex=t==='summary'?0:-1;
+    $('ctabChart').setAttribute('aria-selected',String(t==='chart'));$('ctabChart').tabIndex=t==='chart'?0:-1;
+    $('sumPane').hidden=t!=='summary';$('chartPane').hidden=t!=='chart';
+    if(t==='chart')setTimeout(drawChart,0);
+  }
+  $('ctabSummary').addEventListener('click',function(){setCenterTab('summary')});
+  $('ctabChart').addEventListener('click',function(){setCenterTab('chart')});
+  $('centerTabs').addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();var n=st.centerTab==='summary'?'chart':'summary';setCenterTab(n);$(n==='chart'?'ctabChart':'ctabSummary').focus()}});
+  if(mq.addEventListener)mq.addEventListener('change',applyNarrow);else mq.addListener(applyNarrow);
+
+  /* Global keys */
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){if($('promptDlg').open)return;e.preventDefault();summarize();return}
+    if(e.key==='Escape'){
+      if($('promptDlg').open||document.fullscreenElement||document.body.classList.contains('nav-open'))return;
+      if(!$('feedback').hidden){closeFeedback(true);return}
+      if(st.panels.focus){setFocus(null);toast('Exited focus mode')}
+    }
+  });
+
+  /* Init */
+  fillModels();setPreset('30');syncChartType();
+  setLeft(!!st.panels.left);setRight(!!st.panels.right);
+  var initCat=params.get('category');if(!AGENTS[initCat])initCat='credit';
+  var initAgent=params.get('agent');if(initAgent)AGENTS[initCat].forEach(function(a,i){if(a.id===initAgent)st.agentIdx[initCat]=i});
+  applyNarrow();setCategory(initCat,false);setFocus(st.panels.focus||null);
+  if(DEMO==='empty'||DEMO==='error'||DEMO==='loading'){if(DEMO==='loading'){show('loading')}else summarize()} // preview states on load
+
+  /* In-page navigation hook for the shared header search: opens a category (tab click behaviour) and optionally an
+     agent (agent click behaviour, incl. auto-load) through the existing setCategory/selectAgent. Returns false if unknown. */
+  window.CFO_WORKSPACE={open:function(catId,agentId){
+    if(!AGENTS[catId])return false;
+    if(st.panels.focus)setFocus(null);if(st.panels.left)setLeft(false); // make the agent list visible, as "Try another agent" does
+    if(catId!==st.cat)setCategory(catId,true);
+    if(!agentId){var t=$('tab-'+catId);if(t)t.focus();return true}
+    var i=AGENTS[catId].map(function(a){return a.id}).indexOf(agentId);if(i<0)return false;
+    selectAgent(i,true);return true;
+  }};
+})();
+</script>
+</body>
+</html>
